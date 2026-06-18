@@ -31,28 +31,20 @@ export async function signUp(
 
   const supabase = await createClient();
 
-  console.log("[signUp] Attempting signup for:", email);
-
-  const { data: signUpData, error } = await supabase.auth.signUp({
+  const { error } = await supabase.auth.signUp({
     email,
     password,
   });
-
-  console.log("[signUp] signUp response data:", JSON.stringify(signUpData, null, 2));
-  console.log("[signUp] signUp response error:", JSON.stringify(error, null, 2));
 
   if (error) {
     return { error: error.message };
   }
 
   // Automatically sign in the newly created and auto-confirmed user
-  const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+  const { error: signInError } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
-
-  console.log("[signUp] signIn response data:", JSON.stringify(signInData, null, 2));
-  console.log("[signUp] signIn response error:", JSON.stringify(signInError, null, 2));
 
   if (signInError) {
     return { error: signInError.message };
