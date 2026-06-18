@@ -1,0 +1,1835 @@
+# code_standards.md
+
+# CampusConnect ERP Code Standards
+
+Version: 1.0
+
+Language: TypeScript
+
+Framework: Next.js 16
+
+Purpose: Establish consistent coding practices for all AI agents and developers working on the project.
+
+---
+
+# Core Engineering Principles
+
+## Rule 1
+
+Code must be readable before being clever.
+
+Prioritize:
+
+* Readability
+* Maintainability
+* Simplicity
+
+Avoid unnecessary abstractions.
+
+---
+
+## Rule 2
+
+Business logic never lives in UI components.
+
+Correct:
+
+```text
+Page
+ ↓
+Server Action
+ ↓
+Service
+ ↓
+Prisma
+ ↓
+Database
+```
+
+Incorrect:
+
+```text
+Page
+ ↓
+Database Query
+```
+
+---
+
+## Rule 3
+
+Database access only through Prisma.
+
+Never use:
+
+```sql
+SELECT * FROM users
+```
+
+inside React components.
+
+---
+
+## Rule 4
+
+Every feature must be independently testable.
+
+---
+
+## Rule 5
+
+All code must be TypeScript.
+
+JavaScript files are not allowed.
+
+---
+
+# TypeScript Standards
+
+## Strict Mode
+
+Must be enabled.
+
+```json
+{
+  "strict": true
+}
+```
+
+---
+
+## Never Use Any
+
+❌ Bad
+
+```typescript
+const data: any = response;
+```
+
+✅ Good
+
+```typescript
+const data: unknown = response;
+```
+
+---
+
+## Explicit Return Types
+
+❌ Bad
+
+```typescript
+export async function getUser() {
+}
+```
+
+✅ Good
+
+```typescript
+export async function getUser(): Promise<User> {
+}
+```
+
+---
+
+## Type Definitions
+
+Use:
+
+```typescript
+type
+```
+
+for data structures.
+
+Example:
+
+```typescript
+export type Student = {
+  id: string;
+  name: string;
+  email: string;
+};
+```
+
+---
+
+## Interfaces
+
+Use only for component props.
+
+Example:
+
+```typescript
+interface StudentCardProps {
+  student: Student;
+}
+```
+
+---
+
+# File Naming Standards
+
+## Components
+
+PascalCase
+
+✅
+
+```text
+StudentCard.tsx
+AttendanceTable.tsx
+MarksForm.tsx
+```
+
+❌
+
+```text
+studentcard.tsx
+attendance-table.tsx
+```
+
+---
+
+## Pages
+
+Use Next.js routing conventions.
+
+Example:
+
+```text
+app/dashboard/page.tsx
+```
+
+---
+
+## Server Actions
+
+camelCase
+
+```text
+attendance.ts
+marks.ts
+profile.ts
+```
+
+---
+
+## Utility Files
+
+camelCase
+
+```text
+jwt.ts
+prisma.ts
+helpers.ts
+```
+
+---
+
+# Folder Standards
+
+## Components
+
+```text
+components/
+```
+
+Contains only UI components.
+
+Must not:
+
+* Query database
+* Access Prisma
+* Contain business logic
+
+---
+
+## Services
+
+```text
+services/
+```
+
+Contains business logic.
+
+Examples:
+
+```text
+services/auth
+services/attendance
+services/marks
+```
+
+---
+
+## Actions
+
+```text
+actions/
+```
+
+Contains Server Actions.
+
+Only responsible for:
+
+* Receiving data
+* Calling services
+* Returning results
+
+---
+
+## Lib
+
+```text
+lib/
+```
+
+Contains shared utilities.
+
+Examples:
+
+```text
+prisma.ts
+jwt.ts
+utils.ts
+```
+
+---
+
+# React Standards
+
+## Default To Server Components
+
+Use Server Components whenever possible.
+
+Only use Client Components when:
+
+* useState needed
+* useEffect needed
+* Browser APIs needed
+
+---
+
+## Component Structure
+
+Order:
+
+```typescript
+Imports
+
+Types
+
+Component
+
+Export
+```
+
+Example:
+
+```typescript
+import { Student } from "@/types/student";
+
+interface Props {
+  student: Student;
+}
+
+export function StudentCard({
+  student,
+}: Props) {
+  return (
+    <div>
+      {student.name}
+    </div>
+  );
+}
+```
+
+---
+
+## Component Size
+
+Maximum:
+
+```text
+300 lines
+```
+
+If larger:
+
+Split component.
+
+---
+
+# Styling Standards
+
+## Use Tailwind Only
+
+✅
+
+```tsx
+className="flex items-center gap-4"
+```
+
+❌
+
+```tsx
+style={{
+ display:"flex"
+}}
+```
+
+---
+
+## No Inline Styling
+
+Avoid:
+
+```tsx
+style={{ color: "red" }}
+```
+
+---
+
+## Reusable Styling
+
+Common patterns become reusable components.
+
+Example:
+
+```text
+Card
+Button
+DataTable
+```
+
+---
+
+# Form Standards
+
+Use:
+
+```text
+React Hook Form
+```
+
+and
+
+```text
+Zod
+```
+
+for all forms.
+
+---
+
+## Validation Example
+
+```typescript
+const LoginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+});
+```
+
+---
+
+# API Standards
+
+## Response Structure
+
+All API responses must follow:
+
+```typescript
+{
+ success: boolean;
+ data?: unknown;
+ error?: string;
+}
+```
+
+---
+
+## Success Example
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "123"
+  }
+}
+```
+
+---
+
+## Error Example
+
+```json
+{
+  "success": false,
+  "error": "User not found"
+}
+```
+
+---
+
+# Authentication Standards
+
+## Password Storage
+
+Use:
+
+```text
+bcrypt
+```
+
+Never store plain text passwords.
+
+---
+
+## JWT Usage
+
+JWT contains:
+
+```typescript
+{
+ id: string;
+ role: string;
+}
+```
+
+Do not store sensitive information.
+
+---
+
+## Protected Routes
+
+Must be protected through middleware.
+
+Example:
+
+```text
+/attendance
+/marks
+/profile
+/faculty/*
+```
+
+---
+
+# Database Standards
+
+## Primary Keys
+
+Use:
+
+```text
+UUID
+```
+
+for all IDs.
+
+---
+
+## Timestamps
+
+All tables include:
+
+```text
+createdAt
+updatedAt
+```
+
+---
+
+## Foreign Keys
+
+Must be explicitly defined.
+
+Example:
+
+```typescript
+studentId String
+student Student @relation(...)
+```
+
+---
+
+## Naming Convention
+
+Tables:
+
+```text
+PascalCase Models
+```
+
+Example:
+
+```text
+User
+Student
+Attendance
+Marks
+```
+
+Database tables generated by Prisma:
+
+```text
+users
+students
+attendance
+marks
+```
+
+---
+
+# Prisma Standards
+
+## Single Prisma Client
+
+Only:
+
+```typescript
+lib/prisma.ts
+```
+
+creates Prisma instance.
+
+---
+
+## Never Instantiate Twice
+
+❌
+
+```typescript
+new PrismaClient()
+```
+
+inside services.
+
+---
+
+## Correct
+
+```typescript
+import { prisma } from "@/lib/prisma";
+```
+
+---
+
+# Error Handling Standards
+
+Every async function must use:
+
+```typescript
+try {
+}
+catch(error){
+}
+```
+
+---
+
+## Example
+
+```typescript
+try {
+  return await service();
+}
+catch(error){
+  console.error(error);
+}
+```
+
+---
+
+# Logging Standards
+
+Development:
+
+```typescript
+console.log()
+console.error()
+```
+
+Allowed.
+
+---
+
+Production:
+
+Use structured logging service if introduced later.
+
+---
+
+# Security Standards
+
+Required:
+
+* bcrypt
+* JWT
+* Input Validation
+* Zod Validation
+* Route Protection
+
+Never trust client-side data.
+
+Always validate on server.
+
+---
+
+# Performance Standards
+
+Avoid:
+
+* Unnecessary renders
+* Duplicate queries
+* Fetching unused data
+
+Prefer:
+
+```typescript
+select
+```
+
+over
+
+```typescript
+include everything
+```
+
+---
+
+# Accessibility Standards
+
+Every form element must have:
+
+```html
+<label>
+```
+
+---
+
+Buttons must contain:
+
+```html
+aria-label
+```
+
+when needed.
+
+---
+
+Keyboard navigation must work throughout the application.
+
+---
+
+# Git Standards
+
+Commit Format:
+
+```text
+feat: add attendance module
+
+fix: resolve login issue
+
+refactor: simplify marks service
+
+docs: update build plan
+```
+
+---
+
+# Testing Standards
+
+Before marking a feature complete:
+
+Verify:
+
+* Build passes
+* Lint passes
+* Database works
+* Route protection works
+* Mobile layout works
+
+Commands:
+
+```bash
+npm run build
+npm run lint
+```
+
+---
+
+# Non-Negotiable Rules
+
+1. PostgreSQL is the only database.
+
+2. Prisma is mandatory.
+
+3. Business logic never lives in UI.
+
+4. Components must be reusable.
+
+5. Strict TypeScript everywhere.
+
+6. JWT authentication required.
+
+7. Passwords must be hashed.
+
+8. No direct database access inside React components.# code_standards.md
+
+# Engineering Philosophy
+
+Every line of code in Eligify AI must optimize for:
+
+* Readability
+* Maintainability
+* Scalability
+* AI-assisted development
+* Performance
+
+The codebase should be understandable by:
+
+* Human developers
+* AI coding agents
+* Future contributors
+
+Code should prioritize clarity over cleverness.
+
+---
+
+# Core Principles
+
+## Principle 1
+
+### Simplicity Over Cleverness
+
+Bad:
+
+```ts
+const r = a.filter(x => x.y?.z?.w);
+```
+
+Good:
+
+```ts
+const eligibleSchemes = schemes.filter(
+  (scheme) => scheme.isEligible,
+);
+```
+
+Code should explain itself.
+
+---
+
+## Principle 2
+
+### Server First
+
+Default:
+
+```txt
+Server Components
+```
+
+Exception:
+
+```txt
+Client Components
+```
+
+Only when required.
+
+---
+
+## Principle 3
+
+### Database Before AI
+
+If a task can be solved using:
+
+* SQL
+* Filtering
+* Indexing
+
+then AI must not be used.
+
+---
+
+## Principle 4
+
+### Business Logic Isolation
+
+Business logic must never live inside:
+
+* Components
+* Route handlers
+* UI layers
+
+Business logic belongs in:
+
+```txt
+src/services
+src/lib
+src/actions
+```
+
+---
+
+# TypeScript Standards
+
+## Strict Mode
+
+Mandatory.
+
+```json
+{
+  "strict": true
+}
+```
+
+Must never be disabled.
+
+---
+
+## Any Type
+
+Forbidden.
+
+Never:
+
+```ts
+const data: any;
+```
+
+Use:
+
+```ts
+unknown
+```
+
+or proper interfaces.
+
+---
+
+## Explicit Return Types
+
+Always:
+
+```ts
+export async function getSchemes(): Promise<Scheme[]> {
+}
+```
+
+Never:
+
+```ts
+export async function getSchemes() {
+}
+```
+
+---
+
+## Enums
+
+Prefer union types.
+
+Good:
+
+```ts
+type Gender =
+  | "male"
+  | "female"
+  | "other";
+```
+
+Avoid:
+
+```ts
+enum Gender {}
+```
+
+unless required.
+
+---
+
+# File Naming Standards
+
+## Components
+
+PascalCase.
+
+```txt
+SchemeCard.tsx
+
+ProfileForm.tsx
+
+DashboardHeader.tsx
+```
+
+---
+
+## Hooks
+
+camelCase.
+
+```txt
+useProfile.ts
+
+useCursorFollower.ts
+```
+
+---
+
+## Utility Files
+
+camelCase.
+
+```txt
+recommendationEngine.ts
+
+documentChecker.ts
+```
+
+---
+
+## Routes
+
+Next.js App Router.
+
+```txt
+page.tsx
+
+layout.tsx
+
+loading.tsx
+
+error.tsx
+```
+
+---
+
+# Folder Structure Rules
+
+```txt
+src
+
+├── app
+├── components
+├── actions
+├── db
+├── lib
+├── services
+├── hooks
+├── types
+├── config
+├── constants
+```
+
+---
+
+# Component Standards
+
+## Export Style
+
+Always named exports.
+
+Good:
+
+```ts
+export function SchemeCard() {}
+```
+
+Avoid:
+
+```ts
+export default function SchemeCard() {}
+```
+
+---
+
+## One Component Per File
+
+Allowed:
+
+```txt
+SchemeCard.tsx
+```
+
+Not:
+
+```txt
+SchemeCard.tsx
+SchemeGrid.tsx
+SchemeDetails.tsx
+```
+
+inside same file.
+
+---
+
+## Component Structure
+
+Order:
+
+```ts
+Imports
+
+Types
+
+Constants
+
+Component
+
+Helpers
+```
+
+---
+
+## Props
+
+Always typed.
+
+Example:
+
+```ts
+type SchemeCardProps = {
+  scheme: Scheme;
+};
+
+export function SchemeCard({
+  scheme,
+}: SchemeCardProps) {
+}
+```
+
+---
+
+# React Standards
+
+## Server Components
+
+Default.
+
+Example:
+
+```tsx
+export default async function DashboardPage() {
+}
+```
+
+---
+
+## Client Components
+
+Only when:
+
+* useState
+* useEffect
+* GSAP
+* Browser APIs
+* Event listeners
+
+are required.
+
+---
+
+## State Management
+
+Use:
+
+```txt
+React State
+```
+
+first.
+
+Avoid:
+
+```txt
+Redux
+```
+
+unless absolutely necessary.
+
+---
+
+# Styling Standards
+
+## Styling System
+
+Use:
+
+```txt
+Tailwind CSS v4
+```
+
+only.
+
+---
+
+## Colors
+
+Must come from:
+
+```txt
+ui_tokens.md
+```
+
+Never hardcode.
+
+Bad:
+
+```tsx
+text-[#222222]
+```
+
+Good:
+
+```tsx
+text-text-primary
+```
+
+---
+
+## Spacing
+
+Must use design tokens.
+
+Bad:
+
+```tsx
+mt-[23px]
+```
+
+Good:
+
+```tsx
+mt-6
+```
+
+---
+
+# ReactBits Standards
+
+## Navigation Component
+
+ReactBits menu is mandatory.
+
+Do not replace with:
+
+* Sheet
+* Drawer
+* Dropdown Menu
+* Custom Navigation
+
+---
+
+## Menu Configuration
+
+Menu items must be stored in:
+
+```txt
+src/config/navigation.ts
+```
+
+Example:
+
+```ts
+export const navigationItems = [
+  {
+    label: "Dashboard",
+    href: "/dashboard",
+  },
+];
+```
+
+---
+
+# GSAP Standards
+
+GSAP only for:
+
+* Cursor follower
+* Page transitions
+* Hover interactions
+
+Not for:
+
+* Layout rendering
+* Navigation logic
+
+---
+
+## Cursor Follower
+
+Rules:
+
+```txt
+8px dot
+
+Accent color
+
+Hidden on touch devices
+```
+
+---
+
+# Database Standards
+
+## ORM
+
+Drizzle ORM only.
+
+Never write raw SQL unless necessary.
+
+---
+
+## Schema Location
+
+```txt
+src/db/schema
+```
+
+---
+
+## Migrations
+
+```txt
+src/db/migrations
+```
+
+---
+
+## Naming
+
+Tables:
+
+```txt
+snake_case
+plural
+```
+
+Columns:
+
+```txt
+snake_case
+```
+
+---
+
+# Supabase Standards
+
+## Authentication
+
+Supabase Auth only.
+
+Methods:
+
+```txt
+Email
+
+Password
+```
+
+No Google login.
+
+No OAuth providers.
+
+---
+
+## Storage
+
+Documents stored in:
+
+```txt
+documents
+```
+
+bucket.
+
+---
+
+## RLS
+
+Mandatory for:
+
+* profiles
+* saved_schemes
+* document_checks
+
+---
+
+# API Standards
+
+## Validation
+
+Every request validated using:
+
+```txt
+Zod
+```
+
+---
+
+## Response Shape
+
+Success:
+
+```json
+{
+  "success": true,
+  "data": {}
+}
+```
+
+Error:
+
+```json
+{
+  "success": false,
+  "error": "message"
+}
+```
+
+---
+
+## Route Handlers
+
+Must remain thin.
+
+Bad:
+
+```ts
+POST route
+
+↓
+Business Logic
+
+↓
+Database
+```
+
+Good:
+
+```ts
+POST route
+
+↓
+
+Validation
+
+↓
+
+Service
+
+↓
+
+Response
+```
+
+---
+
+# Service Layer Standards
+
+Business logic belongs here.
+
+Example:
+
+```txt
+src/services/recommendation
+
+src/services/documents
+
+src/services/schemes
+```
+
+---
+
+# Recommendation Engine Standards
+
+This is a critical system.
+
+---
+
+## Allowed Inputs
+
+```txt
+occupation
+
+state
+
+gender
+
+income
+
+education
+
+age
+```
+
+---
+
+## Allowed Sources
+
+```txt
+profiles
+
+schemes
+```
+
+tables.
+
+---
+
+## Forbidden
+
+Do not call OpenAI.
+
+Do not call LLMs.
+
+Do not use embeddings.
+
+Do not use vector search.
+
+---
+
+## Recommendation Flow
+
+```txt
+Profile
+
+↓
+
+SQL Query
+
+↓
+
+Ranking
+
+↓
+
+Return
+```
+
+---
+
+# AI Standards
+
+## Allowed Features
+
+Only:
+
+```txt
+Find Me Scheme
+
+Document Checker
+```
+
+---
+
+## Forbidden Features
+
+AI cannot power:
+
+```txt
+Dashboard
+
+Recommendations
+
+Filtering
+
+Sorting
+
+Search
+```
+
+---
+
+## Find Me Scheme Flow
+
+Required:
+
+```txt
+User Prompt
+
+↓
+
+Retrieve Candidate Schemes
+
+↓
+
+AI Ranking
+
+↓
+
+Response
+```
+
+Never:
+
+```txt
+User Prompt
+
+↓
+
+Entire Database
+
+↓
+
+AI
+```
+
+---
+
+# Document Checker Standards
+
+AI receives:
+
+* Uploaded documents
+* Scheme requirements
+
+Only.
+
+---
+
+Must return:
+
+```json
+{
+  "readiness_score": 90,
+  "missing_documents": [],
+  "summary": ""
+}
+```
+
+---
+
+# Error Handling Standards
+
+Every async operation:
+
+```ts
+try {
+}
+catch (error) {
+}
+```
+
+Required.
+
+---
+
+## Logging
+
+Format:
+
+```ts
+console.error(
+  "[document-check]",
+  error,
+);
+```
+
+Always include context.
+
+---
+
+# Security Standards
+
+## Protected Routes
+
+```txt
+/dashboard
+
+/profile
+
+/apply
+
+/find-scheme
+
+/saved-schemes
+```
+
+---
+
+## Authorization
+
+Every user query must filter by:
+
+```txt
+user_id
+```
+
+---
+
+## File Uploads
+
+Allowed:
+
+```txt
+pdf
+
+png
+
+jpg
+
+jpeg
+```
+
+Only.
+
+---
+
+# Performance Standards
+
+Dashboard:
+
+```txt
+< 2 seconds
+```
+
+---
+
+Recommendation Engine:
+
+```txt
+< 1 second
+```
+
+---
+
+Scheme Search:
+
+```txt
+< 1 second
+```
+
+---
+
+# Testing Standards
+
+Every feature requires:
+
+## Unit Test
+
+Business logic.
+
+---
+
+## Integration Test
+
+API layer.
+
+---
+
+## Manual Test
+
+User workflow.
+
+---
+
+# Documentation Standards
+
+Whenever a new system is introduced:
+
+Update:
+
+```txt
+architecture.md
+
+database_schema.md
+
+api_contracts.md
+
+progress_tracker.md
+```
+
+if affected.
+
+---
+
+# Non-Violation Rules
+
+## Rule 1
+
+No business logic in UI.
+
+---
+
+## Rule 2
+
+No AI recommendations.
+
+---
+
+## Rule 3
+
+No direct database calls from components.
+
+---
+
+## Rule 4
+
+ReactBits navigation cannot be replaced.
+
+---
+
+## Rule 5
+
+Only Supabase Auth.
+
+---
+
+## Rule 6
+
+Only Drizzle ORM.
+
+---
+
+## Rule 7
+
+Every API input validated.
+
+---
+
+## Rule 8
+
+Every user table protected with RLS.
+
+---
+
+## Rule 9
+
+Server Components first.
+
+---
+
+## Rule 10
+
+Code must be understandable without explanation.
+
+If code requires explanation, rewrite it.
+
+
+9. No duplicate business logic.
+
+10. All code must follow this document.
+
+---
+
+# Definition of Good Code
+
+Good code in CampusConnect ERP is:
+
+* Readable
+* Typed
+* Secure
+* Reusable
+* Testable
+* Maintainable
+* Consistent
+
+If a developer or AI agent is unsure how to implement something, choose the simpler solution that follows these standards.
