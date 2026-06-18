@@ -1,31 +1,33 @@
-# Memory — Scheme List Enhancements & Apply Page UI Fixes
+# Memory — Mobile UI & Navigation Refinements
 
-Last updated: 2026-06-18 12:27:00
+Last updated: 2026-06-18 13:02:43
 
 ## What was built
 
-- **Scheme Sorting**: Created `src/components/schemes/SchemeSort.tsx` adding 5 sort options (Relevance, Match Score, Newest Added, Closing Soon, Alphabetical) to the scheme list page.
-- **Match Score Sorting**: Updated `src/app/schemes/page.tsx` and `src/services/schemes.ts` to support fetching all schemes when `sort='match'`, allowing us to compute match scores for the entire pool in memory and then perform pagination locally.
-- **Extended Filters**: Overhauled `src/components/schemes/SchemeFilters.tsx` to include an exhaustive list of all 32 Indian States and Union Territories, and expanded the Occupation filter from 4 to 11 distinct categories.
+- **Mobile Filter Scrolling:** Updated `src/app/schemes/page.tsx` to restrict `sticky` positioning of the `SchemeFilters` block to large screens only (`lg:sticky`). On mobile, the filter block now scrolls normally with the page content.
+- **Mobile Navbar Layout:** Modified `src/components/layout/AppNavbar.tsx` to hide the top-level Logout button on mobile devices, freeing up space between the Eligify logo and the menu toggle button.
+- **StaggeredMenu Refactor:** 
+  - Updated `src/components/navigation/StaggeredMenu.tsx` to accept a `children` prop for rendering custom elements (like the mobile Logout button) at the bottom of the menu.
+  - Added a dedicated, mobile-only "X" close button positioned at the top right of the menu panel for clearer navigation.
+  - Reduced the menu item text size significantly in mobile view (from `text-[2.5rem]` down to `text-sm`) for a more compact and readable layout.
 
 ## Decisions made
 
-- **In-Memory Sorting for Match Scores**: Since `matchPercentage` is calculated in JavaScript (based on logged-in user profile) rather than in SQL, sorting by match score requires fetching all active filtered schemes from the database, calculating the score for each, and then slicing the array for pagination on the frontend server. Added a `fetchAll` flag to the `getFilteredSchemes` service.
+- **Component Extensibility:** Used React `children` to inject the mobile Logout form into `StaggeredMenu` rather than hardcoding business logic (like auth actions) directly into the navigation component, adhering to the component architecture rules.
 
 ## Problems solved
 
-- **Hardcoded Date Bug**: Fixed a UI issue in `src/app/schemes/[id]/apply/ApplyClient.tsx` where the "Application Closes: 14 Days" red banner was statically hardcoded. Now, it calculates the remaining days dynamically using `scheme.endDate`. If the `endDate` is null, it displays a green "Accepting Applications (Open Enrollment)" badge instead.
+- **Mobile UX Issues:** Fixed the issue where the sticky filter block overshadowed content on mobile screens. Addressed the cramped header space by relocating the mobile logout button. Fixed the excessively large text size in the mobile menu.
 
 ## Current state
 
-- The Scheme List page provides robust sorting and comprehensive filtering.
-- The Apply page correctly reflects scheme deadlines and open enrollment statuses.
-- The application passes standard `npm run type-check`.
+- The mobile layout for both the global navigation and the schemes browsing page is significantly improved and functional. 
+- Desktop views remain unaffected and function as intended.
 
 ## Next session starts with
 
-- Continuing work on feature enhancements or reviewing any incoming user feedback for the newly added sorting and filtering capabilities.
+- Continuing with any outstanding UI/UX polishing, addressing newly reported user issues, or starting work on the next planned feature in the roadmap.
 
 ## Open questions
 
-- The `fetchAll` flag in `getFilteredSchemes` retrieves all matches into memory to sort by Match Score. If the scheme database grows to tens of thousands of records, we may need to reconsider moving the scoring logic to SQL or setting an upper limit to prevent memory bloating.
+- None.

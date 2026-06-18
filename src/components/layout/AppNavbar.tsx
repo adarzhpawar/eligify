@@ -60,7 +60,6 @@ export default function AppNavbar() {
             />
           </Link>
 
-          {/* Menu + Logout */}
           <div className="flex items-center gap-4">
             <div className="relative flex items-center">
               <StaggeredMenu
@@ -74,9 +73,19 @@ export default function AppNavbar() {
                 colors={["#FEFECC", "#FFFFFF"]}
                 accentColor="var(--color-eg-text-primary)"
                 isFixed={false}
-              />
+              >
+                <form action={signOutAction} className="block md:hidden mt-auto">
+                  <button
+                    id="logout-button-mobile"
+                    type="submit"
+                    className="px-8 py-4 rounded-full text-lg font-medium text-white bg-black hover:bg-neutral-800 transition-colors duration-300 w-full"
+                  >
+                    Logout
+                  </button>
+                </form>
+              </StaggeredMenu>
             </div>
-            <form action={signOutAction}>
+            <form action={signOutAction} className="hidden md:block">
               <button
                 id="logout-button"
                 type="submit"

@@ -71,7 +71,7 @@ export default async function SchemesPage({
 
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 relative items-start">
           {/* Left Pane (Detached Sticky Filter Box) */}
-          <aside className="w-full lg:w-[360px] shrink-0 sticky top-24 z-30">
+          <aside className="w-full lg:w-[360px] shrink-0 lg:sticky lg:top-24 z-30">
             <Suspense fallback={<div className="h-[400px] bg-white animate-pulse rounded-[24px]"></div>}>
               <SchemeFilters />
             </Suspense>
