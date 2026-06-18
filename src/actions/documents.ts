@@ -4,11 +4,10 @@ import { createClient } from "@/lib/supabase/server";
 import { db } from "@/db";
 import { documentChecks, schemes } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
-import OpenAI from "openai";
+import { GoogleGenAI, Type, Schema } from "@google/genai";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || "",
-  baseURL: process.env.OPENAI_BASE_URL || "https://api.openai.com/v1",
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY || "",
 });
 
 export type UploadedFileMeta = {
@@ -44,8 +43,8 @@ export async function analyzeDocuments(schemeId: string, uploadedFiles: Uploaded
     const scheme = schemeData[0];
     const requiredDocs = scheme.requiredDocuments || [];
 
-    // Call OpenAI to analyze the files
-    const systemPrompt = `You are an expert AI Document Reviewer for a Government Scheme Discovery Platform.
+    // Call Gemini to analyze the files
+    const systemInstruction = `You are an expert AI Document Reviewer for a Government Scheme Discovery Platform.
     
     Task: Compare the User's Uploaded Files against the Scheme's Required Documents.
     
@@ -55,27 +54,51 @@ export async function analyzeDocuments(schemeId: string, uploadedFiles: Uploaded
     - User's Uploaded Files: ${JSON.stringify(uploadedFiles.map(f => f.name))}
     
     You must return a JSON object with EXACTLY the following structure:
-    - "readiness_score": An integer from 0 to 100 indicating the completion percentage (e.g., if 2 out of 4 required documents are uploaded, it's 50).
-    - "missing_documents": An array of strings listing the required documents that have NOT been uploaded.
-    - "ai_summary": A brief 1-2 sentence summary of the document status (e.g., "You have successfully uploaded your Aadhar Card, but you still need to provide your Income Certificate.").
-    
-    Return ONLY valid JSON. Do not wrap in markdown tags like \`\`\`json.`;
+    - readiness_score: An integer from 0 to 100 indicating the completion percentage
+    - missing_documents: An array of strings listing the required documents that have NOT been uploaded
+    - ai_summary: A brief 1-2 sentence summary of the document status`;
 
-    const response = await openai.chat.completions.create({
-      model: process.env.AI_MODEL || "gpt-4o-mini",
-      messages: [
-        { role: "system", content: systemPrompt }
-      ],
-      temperature: 0.1,
+    const prompt = `Review the documents and provide the readiness score, missing documents, and a summary.`;
+
+    const responseSchema: Schema = {
+      type: Type.OBJECT,
+      properties: {
+        readiness_score: {
+          type: Type.INTEGER,
+          description: "An integer from 0 to 100 indicating the completion percentage (e.g., if 2 out of 4 required documents are uploaded, it's 50).",
+        },
+        missing_documents: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.STRING,
+          },
+          description: "An array of strings listing the required documents that have NOT been uploaded.",
+        },
+        ai_summary: {
+          type: Type.STRING,
+          description: "A brief 1-2 sentence summary of the document status (e.g., \"You have successfully uploaded your Aadhar Card, but you still need to provide your Income Certificate.\").",
+        },
+      },
+      required: ["readiness_score", "missing_documents", "ai_summary"],
+    };
+
+    const response = await ai.models.generateContent({
+      model: process.env.AI_MODEL || "gemini-2.5-flash",
+      contents: prompt,
+      config: {
+        systemInstruction: systemInstruction,
+        responseMimeType: "application/json",
+        responseSchema: responseSchema,
+        temperature: 0.1,
+      },
     });
 
-    const content = response.choices[0].message.content?.trim();
+    const content = response.text;
     if (!content) {
       throw new Error("Empty response from AI");
     }
 
-    const jsonString = content.replace(/^```json\s*/, '').replace(/\s*```$/, '');
-    const aiResult = JSON.parse(jsonString) as {
+    const aiResult = JSON.parse(content) as {
       readiness_score: number;
       missing_documents: string[];
       ai_summary: string;
