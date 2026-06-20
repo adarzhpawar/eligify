@@ -6,6 +6,7 @@ import { DocumentStatusCard } from '@/components/apply/DocumentStatusCard';
 import { ChecklistItem } from '@/components/apply/ChecklistItem';
 import { analyzeDocuments, UploadedFileMeta } from '@/actions/documents';
 import LogoLoader from '@/components/layout/LogoLoader';
+import { useNativeHaptics } from '@/hooks/useNativeHaptics';
 
 type ApplyScheme = {
   id: string;
@@ -45,6 +46,8 @@ export function ApplyClient({ scheme, initialCheck }: ApplyClientProps) {
     [key: string]: unknown;
   } | null>(initialCheck);
 
+  const { triggerSuccess, triggerError } = useNativeHaptics();
+
   const handleUploadSuccess = (file: UploadedFileMeta) => {
     setUploadedFiles(prev => [...prev, file]);
   };
@@ -55,8 +58,10 @@ export function ApplyClient({ scheme, initialCheck }: ApplyClientProps) {
     const result = await analyzeDocuments(scheme.id, uploadedFiles);
     if (result.success && result.data) {
       setCheckResult(result.data);
+      triggerSuccess();
     } else {
       setErrorMsg(result.error || "Failed to process documents");
+      triggerError();
     }
     setIsAnalyzing(false);
   };

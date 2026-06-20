@@ -1,0 +1,25 @@
+import type { CapacitorConfig } from '@capacitor/cli';
+
+const config: CapacitorConfig = {
+  appId: 'com.eligify.app',
+  appName: 'Eligify AI',
+  webDir: 'public',
+  server: {
+    url: 'https://eligify-production.vercel.app', // TODO: Update this to your actual Vercel URL
+    cleartext: true
+  },
+  plugins: {
+    SplashScreen: {
+      launchShowDuration: 2000,
+      backgroundColor: '#FAFAF2',
+      showSpinner: false,
+      androidSplashResourceName: 'splash'
+    },
+    StatusBar: {
+      style: 'LIGHT',
+      backgroundColor: '#FAFAF2',
+    }
+  }
+};
+
+export default config;

@@ -3,6 +3,7 @@
 import React, { useState, useTransition } from "react";
 import { toggleSaveScheme } from "@/actions/saved-schemes";
 import { useRouter } from "next/navigation";
+import { useNativeHaptics } from "@/hooks/useNativeHaptics";
 
 interface SaveSchemeLargeButtonProps {
   schemeId: string;
@@ -13,10 +14,12 @@ export function SaveSchemeLargeButton({ schemeId, initialIsSaved }: SaveSchemeLa
   const [isSaved, setIsSaved] = useState(initialIsSaved);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const { triggerSuccess } = useNativeHaptics();
 
   const handleToggle = () => {
     const previousState = isSaved;
     setIsSaved(!isSaved);
+    if (!isSaved) triggerSuccess();
 
     startTransition(async () => {
       const result = await toggleSaveScheme(schemeId);

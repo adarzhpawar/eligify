@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useState, useEffect } from "react";
 import { updateProfile, type ProfileActionResult } from "@/actions/profile";
+import { useNativeHaptics } from "@/hooks/useNativeHaptics";
 import {
   Select,
   SelectContent,
@@ -17,6 +18,13 @@ export default function ProfileForm({ initialData }: { initialData: Record<strin
   const [salary, setSalary] = useState(initialData.annualIncome || "300000");
   const [selectedState, setSelectedState] = useState(initialData.state?.toString() || "");
   const [selectedOccupation, setSelectedOccupation] = useState(initialData.occupation?.toString() || "");
+  const { triggerSuccess } = useNativeHaptics();
+
+  useEffect(() => {
+    if (state.success) {
+      triggerSuccess();
+    }
+  }, [state.success]);
 
   const STATE_OPTIONS: Record<string, string> = {
     "AP": "Andhra Pradesh", "AR": "Arunachal Pradesh", "AS": "Assam", "BR": "Bihar",

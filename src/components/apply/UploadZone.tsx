@@ -2,6 +2,7 @@
 
 import React, { useRef, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { useNativeHaptics } from '@/hooks/useNativeHaptics';
 
 export type UploadZoneProps = {
   onUploadSuccess?: (file: { name: string; path: string; size: number }) => void;
@@ -13,6 +14,7 @@ export function UploadZone({ onUploadSuccess, onUploadError }: UploadZoneProps) 
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const supabase = createClient();
+  const { triggerSuccess, triggerError } = useNativeHaptics();
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -39,6 +41,7 @@ export function UploadZone({ onUploadSuccess, onUploadError }: UploadZoneProps) 
     const errorMsg = validateFile(file);
     if (errorMsg) {
       onUploadError?.(errorMsg);
+      triggerError();
       return;
     }
 
@@ -64,10 +67,12 @@ export function UploadZone({ onUploadSuccess, onUploadError }: UploadZoneProps) 
         path: data.path,
         size: file.size,
       });
+      triggerSuccess();
 
     } catch (err: unknown) {
       console.error("Upload error:", err);
       onUploadError?.((err as Error).message || "Failed to upload document.");
+      triggerError();
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) {

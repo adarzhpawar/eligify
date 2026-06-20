@@ -7,6 +7,7 @@ import { Pagination } from '@/components/schemes/Pagination'
 import { Suspense } from 'react'
 import { getAuthUser } from '@/lib/auth-cache'
 import { getUserAttributes } from '@/services/recommendation'
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 
 export const metadata = {
   title: 'Browse Schemes | Eligify AI',
@@ -70,8 +71,26 @@ export default async function SchemesPage({
         </section>
 
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 relative items-start">
-          {/* Left Pane (Detached Sticky Filter Box) */}
-          <aside className="w-full lg:w-[360px] shrink-0 lg:sticky lg:top-24 z-30">
+          {/* Mobile Filter Button (Bottom Sheet) */}
+          <div className="w-full block lg:hidden z-30 mb-2">
+            <Sheet>
+              <SheetTrigger className="w-full bg-primary text-primary-foreground h-14 rounded-xl font-semibold flex items-center justify-center gap-2 shadow-[0px_10px_30px_rgba(34,34,34,0.1)]">
+                <span className="material-symbols-outlined">filter_list</span>
+                Filters
+              </SheetTrigger>
+              <SheetContent side="bottom" className="h-[85vh] rounded-t-[24px] px-2 py-6 overflow-y-auto">
+                <SheetHeader className="px-4 pb-2">
+                  <SheetTitle className="text-left text-xl">Filter Schemes</SheetTitle>
+                </SheetHeader>
+                <Suspense fallback={<div className="h-[400px] bg-white animate-pulse rounded-[24px]"></div>}>
+                  <SchemeFilters />
+                </Suspense>
+              </SheetContent>
+            </Sheet>
+          </div>
+
+          {/* Desktop Filter Pane */}
+          <aside className="hidden lg:block w-[360px] shrink-0 sticky top-24 z-30">
             <Suspense fallback={<div className="h-[400px] bg-white animate-pulse rounded-[24px]"></div>}>
               <SchemeFilters />
             </Suspense>
