@@ -2,12 +2,40 @@
 
 import { useActionState, useState } from "react";
 import { updateProfile, type ProfileActionResult } from "@/actions/profile";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const initialState: ProfileActionResult = {};
 
 export default function ProfileForm({ initialData }: { initialData: Record<string, string | number | null> }) {
   const [state, formAction, isPending] = useActionState(updateProfile, initialState);
   const [salary, setSalary] = useState(initialData.annualIncome || "300000");
+  const [selectedState, setSelectedState] = useState(initialData.state?.toString() || "");
+  const [selectedOccupation, setSelectedOccupation] = useState(initialData.occupation?.toString() || "");
+
+  const STATE_OPTIONS: Record<string, string> = {
+    "AP": "Andhra Pradesh", "AR": "Arunachal Pradesh", "AS": "Assam", "BR": "Bihar",
+    "CT": "Chhattisgarh", "GA": "Goa", "GJ": "Gujarat", "HR": "Haryana",
+    "HP": "Himachal Pradesh", "JH": "Jharkhand", "KA": "Karnataka", "KL": "Kerala",
+    "MP": "Madhya Pradesh", "MH": "Maharashtra", "MN": "Manipur", "ML": "Meghalaya",
+    "MZ": "Mizoram", "NL": "Nagaland", "OR": "Odisha", "PB": "Punjab", "RJ": "Rajasthan",
+    "SK": "Sikkim", "TN": "Tamil Nadu", "TG": "Telangana", "TR": "Tripura",
+    "UP": "Uttar Pradesh", "UT": "Uttarakhand", "WB": "West Bengal",
+    "AN": "Andaman and Nicobar Islands", "CH": "Chandigarh", "DN": "Dadra and Nagar Haveli and Daman and Diu",
+    "DL": "Delhi", "JK": "Jammu and Kashmir", "LA": "Ladakh", "LD": "Lakshadweep", "PY": "Puducherry"
+  };
+
+  const OCCUPATION_OPTIONS: Record<string, string> = {
+    "tech": "Technology & Software", "healthcare": "Healthcare & Medical",
+    "education": "Education & Research", "finance": "Finance & Accounting",
+    "government": "Public Sector & Government", "farmer": "Farmer / Agriculture",
+    "doctor": "Doctor", "student": "Student", "other": "Other / Independent"
+  };
 
   return (
     <div className="w-full">
@@ -39,55 +67,24 @@ export default function ProfileForm({ initialData }: { initialData: Record<strin
 
             <div className="flex flex-col">
               <label htmlFor="age" className="block text-sm font-semibold mb-2">Age</label>
-              <input id="age" name="age" type="number" min="18" max="120" defaultValue={initialData.age || ""} required
+              <input id="age" name="age" type="number" min="0" max="120" defaultValue={initialData.age || ""} required
                 className="w-full h-12 px-4 bg-[var(--color-eg-surface)] border border-[var(--color-eg-border-strong)] rounded-xl text-base placeholder:text-[var(--color-eg-text-disabled)] focus:outline-none focus:ring-2 focus:ring-[var(--color-eg-border-focus)] transition-all" />
             </div>
 
             <div className="flex flex-col md:col-span-2">
               <label htmlFor="state" className="block text-sm font-semibold mb-2">State of Residence</label>
-              <div className="relative">
-                <select id="state" name="state" required defaultValue={initialData.state || ""}
-                  className="w-full h-12 px-4 pr-12 bg-[var(--color-eg-surface)] border border-[var(--color-eg-border-strong)] rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-[var(--color-eg-border-focus)] appearance-none cursor-pointer">
-                  <option value="" disabled>Select a jurisdiction...</option>
-                  <option value="AP">Andhra Pradesh</option>
-                  <option value="AR">Arunachal Pradesh</option>
-                  <option value="AS">Assam</option>
-                  <option value="BR">Bihar</option>
-                  <option value="CT">Chhattisgarh</option>
-                  <option value="GA">Goa</option>
-                  <option value="GJ">Gujarat</option>
-                  <option value="HR">Haryana</option>
-                  <option value="HP">Himachal Pradesh</option>
-                  <option value="JH">Jharkhand</option>
-                  <option value="KA">Karnataka</option>
-                  <option value="KL">Kerala</option>
-                  <option value="MP">Madhya Pradesh</option>
-                  <option value="MH">Maharashtra</option>
-                  <option value="MN">Manipur</option>
-                  <option value="ML">Meghalaya</option>
-                  <option value="MZ">Mizoram</option>
-                  <option value="NL">Nagaland</option>
-                  <option value="OR">Odisha</option>
-                  <option value="PB">Punjab</option>
-                  <option value="RJ">Rajasthan</option>
-                  <option value="SK">Sikkim</option>
-                  <option value="TN">Tamil Nadu</option>
-                  <option value="TG">Telangana</option>
-                  <option value="TR">Tripura</option>
-                  <option value="UP">Uttar Pradesh</option>
-                  <option value="UT">Uttarakhand</option>
-                  <option value="WB">West Bengal</option>
-                  <option value="AN">Andaman and Nicobar Islands</option>
-                  <option value="CH">Chandigarh</option>
-                  <option value="DN">Dadra and Nagar Haveli and Daman and Diu</option>
-                  <option value="DL">Delhi</option>
-                  <option value="JK">Jammu and Kashmir</option>
-                  <option value="LA">Ladakh</option>
-                  <option value="LD">Lakshadweep</option>
-                  <option value="PY">Puducherry</option>
-                </select>
-                <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--color-eg-text-muted)]">expand_more</span>
-              </div>
+              <Select name="state" value={selectedState} onValueChange={(val) => setSelectedState(val || "")}>
+                <SelectTrigger className="w-full h-12 px-4 bg-[var(--color-eg-surface)] border border-[var(--color-eg-border-strong)] rounded-xl text-base focus:ring-[var(--color-eg-border-focus)] transition-all">
+                  <SelectValue placeholder="Select a jurisdiction...">
+                    {selectedState ? STATE_OPTIONS[selectedState] || selectedState : null}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(STATE_OPTIONS).map(([val, label]) => (
+                    <SelectItem key={val} value={val}>{label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>
@@ -103,8 +100,6 @@ export default function ProfileForm({ initialData }: { initialData: Record<strin
                 {[
                   { val: "english", label: "English", icon: "language" },
                   { val: "hindi", label: "Hindi", icon: "translate" },
-                  { val: "spanish", label: "Spanish", icon: "record_voice_over" },
-                  { val: "other", label: "Other", icon: "more_horiz" },
                 ].map(lang => (
                   <label key={lang.val} className="cursor-pointer relative group">
                     <input type="radio" name="language" value={lang.val} defaultChecked={(initialData.preferredLanguage || "english") === lang.val} className="peer sr-only" />
@@ -145,23 +140,19 @@ export default function ProfileForm({ initialData }: { initialData: Record<strin
           <div className="grid grid-cols-1 gap-6">
             <div className="flex flex-col">
               <label htmlFor="occupation" className="block text-sm font-semibold mb-2">Current Occupation</label>
-              <div className="relative group">
-                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-eg-text-muted)] group-focus-within:text-[var(--color-eg-text-primary)] pointer-events-none transition-colors">work</span>
-                <select id="occupation" name="occupation" required defaultValue={initialData.occupation || ""}
-                  className="w-full h-12 pl-12 pr-4 bg-[var(--color-eg-surface)] border border-[var(--color-eg-border-strong)] rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-[var(--color-eg-border-focus)] appearance-none cursor-pointer">
-                  <option value="" disabled>Select an industry...</option>
-                  <option value="tech">Technology & Software</option>
-                  <option value="healthcare">Healthcare & Medical</option>
-                  <option value="education">Education & Research</option>
-                  <option value="finance">Finance & Accounting</option>
-                  <option value="government">Public Sector & Government</option>
-                  <option value="farmer">Farmer / Agriculture</option>
-                  <option value="doctor">Doctor</option>
-                  <option value="student">Student</option>
-                  <option value="other">Other / Independent</option>
-                </select>
-                <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--color-eg-text-muted)]">expand_more</span>
-              </div>
+              <Select name="occupation" value={selectedOccupation} onValueChange={(val) => setSelectedOccupation(val || "")}>
+                <SelectTrigger className="relative w-full h-12 pl-12 pr-4 bg-[var(--color-eg-surface)] border border-[var(--color-eg-border-strong)] rounded-xl text-base focus:ring-[var(--color-eg-border-focus)] transition-all">
+                  <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-eg-text-muted)] group-focus-within:text-[var(--color-eg-text-primary)] pointer-events-none transition-colors">work</span>
+                  <SelectValue placeholder="Select an industry...">
+                    {selectedOccupation ? OCCUPATION_OPTIONS[selectedOccupation] || selectedOccupation : null}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(OCCUPATION_OPTIONS).map(([val, label]) => (
+                    <SelectItem key={val} value={val}>{label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="flex flex-col">

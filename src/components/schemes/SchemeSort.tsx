@@ -2,6 +2,13 @@
 
 import React, { useCallback, useTransition } from 'react'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 export function SchemeSort() {
   const router = useRouter()
@@ -11,7 +18,7 @@ export function SchemeSort() {
   
   const currentSort = searchParams.get('sort') || 'relevance'
 
-  const handleSortChange = useCallback((value: string) => {
+  const handleSortChange = useCallback((value: string | null) => {
     const params = new URLSearchParams(searchParams.toString())
     if (value && value !== 'relevance') {
       params.set('sort', value)
@@ -28,21 +35,31 @@ export function SchemeSort() {
   return (
     <div className="flex items-center gap-3 relative">
       <label className="text-[14px] text-muted-foreground whitespace-nowrap">Sort by:</label>
-      <div className="relative">
-        <select 
-          className="appearance-none h-10 pl-3 pr-8 rounded-lg border border-border bg-card text-foreground/90 text-[14px] hover:border-primary focus:border-primary outline-none transition-all duration-300 cursor-pointer min-w-[140px]"
-          value={currentSort}
-          onChange={(e) => handleSortChange(e.target.value)}
-          disabled={isPending}
-        >
-          <option value="relevance">Relevance</option>
-          <option value="match">Match Score</option>
-          <option value="newest">Newest Added</option>
-          <option value="closing-soon">Closing Soon</option>
-          <option value="alphabetical">Alphabetical (A-Z)</option>
-        </select>
-        <span className="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground text-[18px]">expand_more</span>
-      </div>
+      <Select 
+        value={currentSort}
+        onValueChange={handleSortChange}
+        disabled={isPending}
+      >
+        <SelectTrigger className="h-10 rounded-lg border-border bg-card text-foreground/90 text-[14px] hover:border-primary focus:ring-1 focus:ring-primary transition-all duration-300 min-w-[140px]">
+          <SelectValue placeholder="Sort by">
+            {
+              currentSort === 'relevance' ? 'Relevance' :
+              currentSort === 'match' ? 'Match Score' :
+              currentSort === 'newest' ? 'Newest Added' :
+              currentSort === 'closing-soon' ? 'Closing Soon' :
+              currentSort === 'alphabetical' ? 'Alphabetical (A-Z)' :
+              'Relevance'
+            }
+          </SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="relevance">Relevance</SelectItem>
+          <SelectItem value="match">Match Score</SelectItem>
+          <SelectItem value="newest">Newest Added</SelectItem>
+          <SelectItem value="closing-soon">Closing Soon</SelectItem>
+          <SelectItem value="alphabetical">Alphabetical (A-Z)</SelectItem>
+        </SelectContent>
+      </Select>
     </div>
   )
 }

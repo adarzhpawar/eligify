@@ -93,6 +93,7 @@ export const documentChecks = pgTable('document_checks', {
   uploadedDocuments: jsonb('uploaded_documents').$type<string[]>().default([]).notNull(),
   missingDocuments: jsonb('missing_documents').$type<string[]>().default([]).notNull(),
   aiSummary: text('ai_summary'),
+  documentFeedback: jsonb('document_feedback').$type<Array<{ filename: string, status: 'valid' | 'invalid' | 'unrelated', feedback: string, confidence?: number, mappedRequirement?: string }>>().default([]).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 }, (table) => [
   index('document_checks_user_id_idx').on(table.userId),

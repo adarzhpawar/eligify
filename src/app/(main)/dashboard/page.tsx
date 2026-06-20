@@ -41,18 +41,18 @@ export default async function DashboardPage() {
     <div className="py-12">
       <BentoGrid>
         <DashboardHero name={firstName} schemeCount={Math.min(5, recommendedSchemes.length)} />
-        
-        <MetricCard 
-          title="Eligible Schemes" 
-          value={Math.min(5, recommendedSchemes.length)} 
-          icon="assignment_turned_in" 
-        />
-        
-        <MetricCard 
-          title="Saved Schemes" 
-          value={savedSchemes.length} 
-          icon="bookmark" 
-        />
+        <div className="grid grid-cols-2 gap-4 md:gap-6 lg:col-span-2">
+          <MetricCard 
+            title="Eligible Schemes" 
+            value={Math.min(5, recommendedSchemes.length)} 
+            icon="assignment_turned_in" 
+          />
+          <MetricCard 
+            title="Saved Schemes" 
+            value={savedSchemes.length} 
+            icon="bookmark" 
+          />
+        </div>
         
         <AIInsightCard 
           insightText={
@@ -68,9 +68,9 @@ export default async function DashboardPage() {
           }
         />
 
-        <div className="lg:col-span-4 flex justify-between items-end mt-6 mb-2 md:mb-0 pb-2">
-          <h2 className="text-[24px] font-semibold text-primary">Recommended for You</h2>
-          <Link href="/schemes" className="text-[14px] font-semibold text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
+        <div className="lg:col-span-4 flex justify-between items-center mt-6 mb-4 md:mb-0 pb-2">
+          <h2 className="text-[20px] md:text-[24px] font-semibold text-primary leading-tight mr-4">Recommended</h2>
+          <Link href="/schemes" className="text-[14px] font-semibold text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 shrink-0 whitespace-nowrap">
             View all <span className="material-symbols-outlined text-sm">arrow_forward</span>
           </Link>
         </div>

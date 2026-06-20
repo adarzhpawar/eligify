@@ -2,6 +2,13 @@
 
 import React, { useCallback, useTransition, useState, useEffect } from 'react'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 const STATE_OPTIONS = [
   { value: 'andhra_pradesh', label: 'Andhra Pradesh' },
@@ -113,55 +120,70 @@ export function SchemeFilters() {
       {/* State Filter */}
       <div className="flex flex-col gap-3">
         <label className="font-semibold text-[14px] text-foreground/90">State / Territory</label>
-        <div className="relative">
-          <select 
-            className="appearance-none w-full h-12 pl-4 pr-10 rounded-lg border border-border bg-card text-foreground/90 text-[16px] hover:border-primary focus:border-primary outline-none transition-all duration-300 cursor-pointer"
-            value={searchParams.get('state') || ''}
-            onChange={(e) => handleFilterChange('state', e.target.value)}
-          >
-            <option value="">All States</option>
+        <Select 
+          value={searchParams.get('state') || 'all'}
+          onValueChange={(val) => handleFilterChange('state', val === 'all' ? '' : (val || ''))}
+        >
+          <SelectTrigger className="w-full h-12 rounded-lg border-border bg-card text-foreground/90 text-[16px] hover:border-primary focus:ring-1 focus:ring-primary transition-all duration-300">
+            <SelectValue placeholder="All States">
+              {searchParams.get('state') && searchParams.get('state') !== 'all' 
+                ? STATE_OPTIONS.find(s => s.value === searchParams.get('state'))?.label || searchParams.get('state')
+                : 'All States'}
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All States</SelectItem>
             {STATE_OPTIONS.map(state => (
-              <option key={state.value} value={state.value}>{state.label}</option>
+              <SelectItem key={state.value} value={state.value}>{state.label}</SelectItem>
             ))}
-          </select>
-          <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground text-[20px]">expand_more</span>
-        </div>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Occupation Filter */}
       <div className="flex flex-col gap-3">
         <label className="font-semibold text-[14px] text-foreground/90">Occupation</label>
-        <div className="relative">
-          <select 
-            className="appearance-none w-full h-12 pl-4 pr-10 rounded-lg border border-border bg-card text-foreground/90 text-[16px] hover:border-primary focus:border-primary outline-none transition-all duration-300 cursor-pointer"
-            value={searchParams.get('occupation') || ''}
-            onChange={(e) => handleFilterChange('occupation', e.target.value)}
-          >
-            <option value="">All Occupations</option>
+        <Select 
+          value={searchParams.get('occupation') || 'all'}
+          onValueChange={(val) => handleFilterChange('occupation', val === 'all' ? '' : (val || ''))}
+        >
+          <SelectTrigger className="w-full h-12 rounded-lg border-border bg-card text-foreground/90 text-[16px] hover:border-primary focus:ring-1 focus:ring-primary transition-all duration-300">
+            <SelectValue placeholder="All Occupations">
+              {searchParams.get('occupation') && searchParams.get('occupation') !== 'all'
+                ? OCCUPATION_OPTIONS.find(o => o.value === searchParams.get('occupation'))?.label || searchParams.get('occupation')
+                : 'All Occupations'}
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Occupations</SelectItem>
             {OCCUPATION_OPTIONS.map(occ => (
-              <option key={occ.value} value={occ.value}>{occ.label}</option>
+              <SelectItem key={occ.value} value={occ.value}>{occ.label}</SelectItem>
             ))}
-          </select>
-          <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground text-[20px]">expand_more</span>
-        </div>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Gender Filter */}
       <div className="flex flex-col gap-3">
         <label className="font-semibold text-[14px] text-foreground/90">Gender</label>
-        <div className="relative">
-          <select 
-            className="appearance-none w-full h-12 pl-4 pr-10 rounded-lg border border-border bg-card text-foreground/90 text-[16px] hover:border-primary focus:border-primary outline-none transition-all duration-300 cursor-pointer"
-            value={searchParams.get('gender') || ''}
-            onChange={(e) => handleFilterChange('gender', e.target.value)}
-          >
-            <option value="">All Genders</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-          </select>
-          <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground text-[20px]">expand_more</span>
-        </div>
+        <Select 
+          value={searchParams.get('gender') || 'all'}
+          onValueChange={(val) => handleFilterChange('gender', val === 'all' ? '' : (val || ''))}
+        >
+          <SelectTrigger className="w-full h-12 rounded-lg border-border bg-card text-foreground/90 text-[16px] hover:border-primary focus:ring-1 focus:ring-primary transition-all duration-300">
+            <SelectValue placeholder="All Genders">
+              {searchParams.get('gender') && searchParams.get('gender') !== 'all'
+                ? { male: 'Male', female: 'Female', other: 'Other' }[searchParams.get('gender') as string] || searchParams.get('gender')
+                : 'All Genders'}
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Genders</SelectItem>
+            <SelectItem value="male">Male</SelectItem>
+            <SelectItem value="female">Female</SelectItem>
+            <SelectItem value="other">Other</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Active Filters / Clear */}

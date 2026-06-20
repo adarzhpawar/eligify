@@ -2,6 +2,13 @@
 
 import { useState, useActionState } from "react";
 import { completeProfile, type ProfileActionResult } from "@/actions/profile";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const initialState: ProfileActionResult = {};
 
@@ -9,6 +16,27 @@ export default function OnboardingPage() {
   const [step, setStep] = useState(1);
   const [state, formAction, isPending] = useActionState(completeProfile, initialState);
   const [salary, setSalary] = useState("500000");
+  const [selectedState, setSelectedState] = useState("");
+  const [selectedOccupation, setSelectedOccupation] = useState("");
+
+  const STATE_OPTIONS: Record<string, string> = {
+    "andhra_pradesh": "Andhra Pradesh", "arunachal_pradesh": "Arunachal Pradesh", "assam": "Assam", "bihar": "Bihar",
+    "chhattisgarh": "Chhattisgarh", "goa": "Goa", "gujarat": "Gujarat", "haryana": "Haryana",
+    "himachal_pradesh": "Himachal Pradesh", "jharkhand": "Jharkhand", "karnataka": "Karnataka", "kerala": "Kerala",
+    "madhya_pradesh": "Madhya Pradesh", "maharashtra": "Maharashtra", "manipur": "Manipur", "meghalaya": "Meghalaya",
+    "mizoram": "Mizoram", "nagaland": "Nagaland", "odisha": "Odisha", "punjab": "Punjab", "rajasthan": "Rajasthan",
+    "sikkim": "Sikkim", "tamil_nadu": "Tamil Nadu", "telangana": "Telangana", "tripura": "Tripura",
+    "uttar_pradesh": "Uttar Pradesh", "uttarakhand": "Uttarakhand", "west_bengal": "West Bengal",
+    "andaman_and_nicobar_islands": "Andaman and Nicobar Islands", "chandigarh": "Chandigarh", "dadra_and_nagar_haveli_and_daman_and_diu": "Dadra and Nagar Haveli and Daman and Diu",
+    "delhi": "Delhi", "jammu_and_kashmir": "Jammu and Kashmir", "ladakh": "Ladakh", "lakshadweep": "Lakshadweep", "puducherry": "Puducherry"
+  };
+
+  const OCCUPATION_OPTIONS: Record<string, string> = {
+    "tech": "Technology & Software", "healthcare": "Healthcare & Medical",
+    "education": "Education & Research", "finance": "Finance & Accounting",
+    "government": "Public Sector & Government", "farmer": "Farmer / Agriculture",
+    "doctor": "Doctor", "student": "Student", "other": "Other / Independent"
+  };
 
   const [localError, setLocalError] = useState("");
 
@@ -86,56 +114,58 @@ export default function OnboardingPage() {
             {/* Age Field */}
             <div className="col-span-1 md:col-span-1 bg-[var(--color-eg-surface)] rounded-3xl shadow-[var(--shadow-eg-sm)] border border-[var(--color-eg-border)] p-8 sm:p-10 flex flex-col justify-center transition-all hover:shadow-[var(--shadow-eg-md)]">
               <label htmlFor="age" className="block text-sm font-semibold mb-2">Age</label>
-              <input id="age" name="age" type="number" min="18" max="120" placeholder="YY" required={step === 1}
+              <input id="age" name="age" type="number" min="0" max="120" placeholder="YY" required={step === 1}
                 className="w-full h-14 px-4 bg-[var(--color-eg-surface)] border border-[var(--color-eg-border-strong)] rounded-xl text-base placeholder:text-[var(--color-eg-text-disabled)] focus:outline-none focus:ring-2 focus:ring-[var(--color-eg-border-focus)] transition-all" />
             </div>
 
             {/* State Field */}
             <div className="col-span-1 md:col-span-3 bg-[var(--color-eg-surface)] rounded-3xl shadow-[var(--shadow-eg-sm)] border border-[var(--color-eg-border)] p-8 sm:p-10 flex flex-col justify-center transition-all hover:shadow-[var(--shadow-eg-md)]">
               <label htmlFor="state" className="block text-sm font-semibold mb-2">State of Residence</label>
-              <div className="relative">
-                <select id="state" name="state" required={step === 1} defaultValue=""
-                  className="w-full h-14 px-4 pr-12 bg-[var(--color-eg-surface)] border border-[var(--color-eg-border-strong)] rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-[var(--color-eg-border-focus)] appearance-none cursor-pointer">
-                  <option value="" disabled>Select a state/UT...</option>
-                  <option value="andhra_pradesh">Andhra Pradesh</option>
-                  <option value="arunachal_pradesh">Arunachal Pradesh</option>
-                  <option value="assam">Assam</option>
-                  <option value="bihar">Bihar</option>
-                  <option value="chhattisgarh">Chhattisgarh</option>
-                  <option value="goa">Goa</option>
-                  <option value="gujarat">Gujarat</option>
-                  <option value="haryana">Haryana</option>
-                  <option value="himachal_pradesh">Himachal Pradesh</option>
-                  <option value="jharkhand">Jharkhand</option>
-                  <option value="karnataka">Karnataka</option>
-                  <option value="kerala">Kerala</option>
-                  <option value="madhya_pradesh">Madhya Pradesh</option>
-                  <option value="maharashtra">Maharashtra</option>
-                  <option value="manipur">Manipur</option>
-                  <option value="meghalaya">Meghalaya</option>
-                  <option value="mizoram">Mizoram</option>
-                  <option value="nagaland">Nagaland</option>
-                  <option value="odisha">Odisha</option>
-                  <option value="punjab">Punjab</option>
-                  <option value="rajasthan">Rajasthan</option>
-                  <option value="sikkim">Sikkim</option>
-                  <option value="tamil_nadu">Tamil Nadu</option>
-                  <option value="telangana">Telangana</option>
-                  <option value="tripura">Tripura</option>
-                  <option value="uttar_pradesh">Uttar Pradesh</option>
-                  <option value="uttarakhand">Uttarakhand</option>
-                  <option value="west_bengal">West Bengal</option>
-                  <option value="andaman_and_nicobar_islands">Andaman and Nicobar Islands</option>
-                  <option value="chandigarh">Chandigarh</option>
-                  <option value="dadra_and_nagar_haveli_and_daman_and_diu">Dadra and Nagar Haveli and Daman and Diu</option>
-                  <option value="delhi">Delhi</option>
-                  <option value="jammu_and_kashmir">Jammu and Kashmir</option>
-                  <option value="ladakh">Ladakh</option>
-                  <option value="lakshadweep">Lakshadweep</option>
-                  <option value="puducherry">Puducherry</option>
-                </select>
-                <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--color-eg-text-muted)]">expand_more</span>
-              </div>
+              <Select name="state" required={step === 1} value={selectedState} onValueChange={(val) => setSelectedState(val || "")}>
+                <SelectTrigger className="w-full h-14 px-4 bg-[var(--color-eg-surface)] border border-[var(--color-eg-border-strong)] rounded-xl text-base focus:ring-[var(--color-eg-border-focus)] transition-all">
+                  <SelectValue placeholder="Select a state/UT...">
+                    {selectedState ? STATE_OPTIONS[selectedState] || selectedState : null}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="andhra_pradesh">Andhra Pradesh</SelectItem>
+                  <SelectItem value="arunachal_pradesh">Arunachal Pradesh</SelectItem>
+                  <SelectItem value="assam">Assam</SelectItem>
+                  <SelectItem value="bihar">Bihar</SelectItem>
+                  <SelectItem value="chhattisgarh">Chhattisgarh</SelectItem>
+                  <SelectItem value="goa">Goa</SelectItem>
+                  <SelectItem value="gujarat">Gujarat</SelectItem>
+                  <SelectItem value="haryana">Haryana</SelectItem>
+                  <SelectItem value="himachal_pradesh">Himachal Pradesh</SelectItem>
+                  <SelectItem value="jharkhand">Jharkhand</SelectItem>
+                  <SelectItem value="karnataka">Karnataka</SelectItem>
+                  <SelectItem value="kerala">Kerala</SelectItem>
+                  <SelectItem value="madhya_pradesh">Madhya Pradesh</SelectItem>
+                  <SelectItem value="maharashtra">Maharashtra</SelectItem>
+                  <SelectItem value="manipur">Manipur</SelectItem>
+                  <SelectItem value="meghalaya">Meghalaya</SelectItem>
+                  <SelectItem value="mizoram">Mizoram</SelectItem>
+                  <SelectItem value="nagaland">Nagaland</SelectItem>
+                  <SelectItem value="odisha">Odisha</SelectItem>
+                  <SelectItem value="punjab">Punjab</SelectItem>
+                  <SelectItem value="rajasthan">Rajasthan</SelectItem>
+                  <SelectItem value="sikkim">Sikkim</SelectItem>
+                  <SelectItem value="tamil_nadu">Tamil Nadu</SelectItem>
+                  <SelectItem value="telangana">Telangana</SelectItem>
+                  <SelectItem value="tripura">Tripura</SelectItem>
+                  <SelectItem value="uttar_pradesh">Uttar Pradesh</SelectItem>
+                  <SelectItem value="uttarakhand">Uttarakhand</SelectItem>
+                  <SelectItem value="west_bengal">West Bengal</SelectItem>
+                  <SelectItem value="andaman_and_nicobar_islands">Andaman and Nicobar Islands</SelectItem>
+                  <SelectItem value="chandigarh">Chandigarh</SelectItem>
+                  <SelectItem value="dadra_and_nagar_haveli_and_daman_and_diu">Dadra and Nagar Haveli and Daman and Diu</SelectItem>
+                  <SelectItem value="delhi">Delhi</SelectItem>
+                  <SelectItem value="jammu_and_kashmir">Jammu and Kashmir</SelectItem>
+                  <SelectItem value="ladakh">Ladakh</SelectItem>
+                  <SelectItem value="lakshadweep">Lakshadweep</SelectItem>
+                  <SelectItem value="puducherry">Puducherry</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
@@ -172,8 +202,6 @@ export default function OnboardingPage() {
                 {[
                   { val: "english", label: "English", icon: "language" },
                   { val: "hindi", label: "Hindi", icon: "translate" },
-                  { val: "spanish", label: "Spanish", icon: "record_voice_over" },
-                  { val: "other", label: "Other", icon: "more_horiz" },
                 ].map(lang => (
                   <label key={lang.val} className="cursor-pointer relative group">
                     <input type="radio" name="language" value={lang.val} defaultChecked={lang.val === "english"} className="peer sr-only" />
@@ -241,23 +269,25 @@ export default function OnboardingPage() {
             {/* Occupation */}
             <div className="col-span-1 md:col-span-4 bg-[var(--color-eg-surface)] rounded-3xl shadow-[var(--shadow-eg-sm)] border border-[var(--color-eg-border)] p-8 sm:p-10 flex flex-col justify-center transition-all hover:shadow-[var(--shadow-eg-md)]">
               <label htmlFor="occupation" className="block text-sm font-semibold mb-2">Current Occupation</label>
-              <div className="relative group">
-                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-eg-text-muted)] group-focus-within:text-[var(--color-eg-text-primary)] pointer-events-none transition-colors">work</span>
-                <select id="occupation" name="occupation" required={step === 3} defaultValue=""
-                  className="w-full h-14 pl-12 pr-4 bg-[var(--color-eg-surface)] border border-[var(--color-eg-border-strong)] rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-[var(--color-eg-border-focus)] appearance-none cursor-pointer">
-                  <option value="" disabled>Select an industry...</option>
-                  <option value="tech">Technology & Software</option>
-                  <option value="healthcare">Healthcare & Medical</option>
-                  <option value="education">Education & Research</option>
-                  <option value="finance">Finance & Accounting</option>
-                  <option value="government">Public Sector & Government</option>
-                  <option value="farmer">Farmer / Agriculture</option>
-                  <option value="doctor">Doctor</option>
-                  <option value="student">Student</option>
-                  <option value="other">Other / Independent</option>
-                </select>
-                <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--color-eg-text-muted)]">expand_more</span>
-              </div>
+              <Select name="occupation" required={step === 3} value={selectedOccupation} onValueChange={(val) => setSelectedOccupation(val || "")}>
+                <SelectTrigger className="relative w-full h-14 pl-12 pr-4 bg-[var(--color-eg-surface)] border border-[var(--color-eg-border-strong)] rounded-xl text-base focus:ring-[var(--color-eg-border-focus)] transition-all">
+                  <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-eg-text-muted)] group-focus-within:text-[var(--color-eg-text-primary)] pointer-events-none transition-colors">work</span>
+                  <SelectValue placeholder="Select an industry...">
+                    {selectedOccupation ? OCCUPATION_OPTIONS[selectedOccupation] || selectedOccupation : null}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="tech">Technology & Software</SelectItem>
+                  <SelectItem value="healthcare">Healthcare & Medical</SelectItem>
+                  <SelectItem value="education">Education & Research</SelectItem>
+                  <SelectItem value="finance">Finance & Accounting</SelectItem>
+                  <SelectItem value="government">Public Sector & Government</SelectItem>
+                  <SelectItem value="farmer">Farmer / Agriculture</SelectItem>
+                  <SelectItem value="doctor">Doctor</SelectItem>
+                  <SelectItem value="student">Student</SelectItem>
+                  <SelectItem value="other">Other / Independent</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Employment Status */}

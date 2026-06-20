@@ -80,7 +80,7 @@ export default async function SchemesPage({
           {/* Right Pane (Results) */}
           <section className="flex-grow min-w-0">
             <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
-              <h2 className="text-[24px] font-semibold text-foreground">Matching Schemes ({totalCount})</h2>
+              <h2 className="text-[24px] font-semibold text-foreground">All Schemes ({totalCount})</h2>
               <Suspense fallback={<div className="w-[200px] h-10 bg-card animate-pulse rounded-lg"></div>}>
                 <SchemeSort />
               </Suspense>

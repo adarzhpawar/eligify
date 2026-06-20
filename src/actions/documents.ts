@@ -56,16 +56,22 @@ export async function analyzeDocuments(schemeId: string, uploadedFiles: Uploaded
     You must return a JSON object with EXACTLY the following structure:
     - readiness_score: An integer from 0 to 100 indicating the completion percentage
     - missing_documents: An array of strings listing the required documents that have NOT been uploaded
-    - ai_summary: A brief 1-2 sentence summary of the document status`;
+    - ai_summary: A brief 1-2 sentence summary of the document status
+    - document_feedback: An array of objects providing feedback for EACH uploaded file. Each object must have:
+      - filename: The exact name of the uploaded file.
+      - status: 'valid', 'invalid', or 'unrelated'.
+      - feedback: Specific feedback about this document.
+      - confidence: An integer from 0 to 100 indicating how confident you are that this document is valid and correct.
+      - mappedRequirement: (Optional) Which required document this file maps to, if any.`;
 
-    const prompt = `Review the documents and provide the readiness score, missing documents, and a summary.`;
+    const prompt = `Review the documents and provide the readiness score, missing documents, a summary, and specific feedback for each uploaded file.`;
 
     const responseSchema: Schema = {
       type: Type.OBJECT,
       properties: {
         readiness_score: {
           type: Type.INTEGER,
-          description: "An integer from 0 to 100 indicating the completion percentage (e.g., if 2 out of 4 required documents are uploaded, it's 50).",
+          description: "An integer from 0 to 100 indicating the completion percentage.",
         },
         missing_documents: {
           type: Type.ARRAY,
@@ -76,10 +82,25 @@ export async function analyzeDocuments(schemeId: string, uploadedFiles: Uploaded
         },
         ai_summary: {
           type: Type.STRING,
-          description: "A brief 1-2 sentence summary of the document status (e.g., \"You have successfully uploaded your Aadhar Card, but you still need to provide your Income Certificate.\").",
+          description: "A brief 1-2 sentence summary of the document status.",
+        },
+        document_feedback: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              filename: { type: Type.STRING, description: "The exact name of the uploaded file." },
+              status: { type: Type.STRING, description: "'valid', 'invalid', or 'unrelated'." },
+              feedback: { type: Type.STRING, description: "Specific feedback about this document." },
+              confidence: { type: Type.INTEGER, description: "An integer from 0 to 100 indicating how confident you are that this document is valid and correct." },
+              mappedRequirement: { type: Type.STRING, description: "Which required document this file maps to, if any." },
+            },
+            required: ["filename", "status", "feedback", "confidence"],
+          },
+          description: "An array of objects providing feedback for EACH uploaded file.",
         },
       },
-      required: ["readiness_score", "missing_documents", "ai_summary"],
+      required: ["readiness_score", "missing_documents", "ai_summary", "document_feedback"],
     };
 
     const response = await ai.models.generateContent({
@@ -102,6 +123,7 @@ export async function analyzeDocuments(schemeId: string, uploadedFiles: Uploaded
       readiness_score: number;
       missing_documents: string[];
       ai_summary: string;
+      document_feedback: Array<{ filename: string, status: 'valid' | 'invalid' | 'unrelated', feedback: string, confidence: number, mappedRequirement?: string }>;
     };
 
     // Store the check in the database
@@ -126,6 +148,7 @@ export async function analyzeDocuments(schemeId: string, uploadedFiles: Uploaded
           uploadedDocuments: uploadedDocNames,
           missingDocuments: aiResult.missing_documents,
           aiSummary: aiResult.ai_summary,
+          documentFeedback: aiResult.document_feedback,
         })
         .where(eq(documentChecks.id, checkId));
     } else {
@@ -139,6 +162,7 @@ export async function analyzeDocuments(schemeId: string, uploadedFiles: Uploaded
           uploadedDocuments: uploadedDocNames,
           missingDocuments: aiResult.missing_documents,
           aiSummary: aiResult.ai_summary,
+          documentFeedback: aiResult.document_feedback,
         })
         .returning({ id: documentChecks.id });
       checkId = inserted[0].id;
@@ -151,7 +175,8 @@ export async function analyzeDocuments(schemeId: string, uploadedFiles: Uploaded
         readinessScore: aiResult.readiness_score,
         missingDocuments: aiResult.missing_documents,
         aiSummary: aiResult.ai_summary,
-        uploadedDocuments: uploadedDocNames
+        uploadedDocuments: uploadedDocNames,
+        documentFeedback: aiResult.document_feedback
       } 
     };
   } catch (error) {

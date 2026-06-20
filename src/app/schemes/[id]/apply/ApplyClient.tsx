@@ -5,6 +5,7 @@ import { UploadZone } from '@/components/apply/UploadZone';
 import { DocumentStatusCard } from '@/components/apply/DocumentStatusCard';
 import { ChecklistItem } from '@/components/apply/ChecklistItem';
 import { analyzeDocuments, UploadedFileMeta } from '@/actions/documents';
+import LogoLoader from '@/components/layout/LogoLoader';
 
 type ApplyScheme = {
   id: string;
@@ -23,6 +24,7 @@ type ApplyClientProps = {
     missingDocuments?: string[];
     aiSummary?: string;
     uploadedDocuments?: unknown;
+    documentFeedback?: Array<{ filename: string, status: 'valid' | 'invalid' | 'unrelated', feedback: string, confidence?: number, mappedRequirement?: string }>;
     [key: string]: unknown;
   } | null;
 };
@@ -33,11 +35,13 @@ export function ApplyClient({ scheme, initialCheck }: ApplyClientProps) {
     : [];
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFileMeta[]>(initialDocs);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [checkResult, setCheckResult] = useState<{
     readinessScore?: number;
     missingDocuments?: string[];
     aiSummary?: string;
     uploadedDocuments?: unknown;
+    documentFeedback?: Array<{ filename: string, status: 'valid' | 'invalid' | 'unrelated', feedback: string, confidence?: number, mappedRequirement?: string }>;
     [key: string]: unknown;
   } | null>(initialCheck);
 
@@ -47,11 +51,12 @@ export function ApplyClient({ scheme, initialCheck }: ApplyClientProps) {
 
   const handleProcessDocuments = async () => {
     setIsAnalyzing(true);
+    setErrorMsg(null);
     const result = await analyzeDocuments(scheme.id, uploadedFiles);
     if (result.success && result.data) {
       setCheckResult(result.data);
     } else {
-      alert(result.error || "Failed to process documents");
+      setErrorMsg(result.error || "Failed to process documents");
     }
     setIsAnalyzing(false);
   };
@@ -66,7 +71,21 @@ export function ApplyClient({ scheme, initialCheck }: ApplyClientProps) {
   const progressPercent = requiredCount === 0 ? 100 : Math.round((verifiedCount / requiredCount) * 100);
 
   return (
-    <div className="flex flex-col md:flex-row gap-6">
+    <div className="w-full max-w-[1440px] mx-auto px-5 lg:px-16 flex flex-col lg:flex-row gap-8 lg:gap-16">
+      {/* Full-screen Loading Overlay for AI Processing */}
+      {isAnalyzing && (
+        <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background/95 backdrop-blur-sm h-[100dvh] w-[100dvw]">
+          <LogoLoader />
+          <div className="absolute mt-32 flex flex-col items-center">
+            <span className="material-symbols-outlined text-[32px] text-foreground animate-spin mb-4">smart_toy</span>
+            <h3 className="text-[20px] font-semibold text-foreground">AI is reviewing your documents...</h3>
+            <p className="text-[14px] text-muted-foreground mt-2 max-w-md text-center">
+              Our AI is comparing your uploaded files against the official scheme requirements. This may take a few moments.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Left Panel: Context & Requirements (40%) */}
       <aside className="w-full md:w-[40%] flex flex-col gap-6">
         
@@ -104,8 +123,8 @@ export function ApplyClient({ scheme, initialCheck }: ApplyClientProps) {
               </div>
             )
           })() : (
-            <div className="flex items-center gap-2 mt-4 text-[#5f613a] p-3 bg-[#5f613a]/10 border border-[#5f613a]/20 rounded-lg">
-              <span className="material-symbols-outlined text-[#5f613a]">event_available</span>
+            <div className="flex items-center gap-2 mt-4 text-[var(--color-eg-success-dark)] p-3 bg-[var(--color-eg-success-light)] border border-[var(--color-eg-success-dark)]/20 rounded-lg">
+              <span className="material-symbols-outlined">event_available</span>
               <span className="text-[14px] font-semibold">Accepting Applications (Open Enrollment)</span>
             </div>
           )}
@@ -114,19 +133,19 @@ export function ApplyClient({ scheme, initialCheck }: ApplyClientProps) {
         {/* Eligibility Met Card */}
         <div className="bg-card rounded-[20px] p-6 shadow-[0px_10px_30px_rgba(34,34,34,0.05)] flex flex-col gap-3 border border-border/10">
           <h2 className="text-[24px] font-semibold text-foreground flex items-center gap-2">
-            <span className="material-symbols-outlined text-[#5f613a]">verified</span>
+            <span className="material-symbols-outlined text-[var(--color-eg-success-dark)]">verified</span>
             Eligibility Confirmed
           </h2>
           <ul className="flex flex-col gap-3 mt-2">
             <li className="flex items-start gap-3">
-              <span className="material-symbols-outlined text-[#5f613a] mt-0.5">check_circle</span>
+              <span className="material-symbols-outlined text-[var(--color-eg-success-dark)] mt-0.5">check_circle</span>
               <div>
                 <span className="block text-[14px] font-semibold text-foreground">Age Requirement</span>
                 <span className="block text-[14px] text-muted-foreground text-sm">Over 18 years verified via profile.</span>
               </div>
             </li>
             <li className="flex items-start gap-3">
-              <span className="material-symbols-outlined text-[#5f613a] mt-0.5">check_circle</span>
+              <span className="material-symbols-outlined text-[var(--color-eg-success-dark)] mt-0.5">check_circle</span>
               <div>
                 <span className="block text-[14px] font-semibold text-foreground">Target Group</span>
                 <span className="block text-[14px] text-muted-foreground text-sm">Matches scheme priority: {scheme.targetGroup}.</span>
@@ -193,11 +212,22 @@ export function ApplyClient({ scheme, initialCheck }: ApplyClientProps) {
               disabled={isAnalyzing}
               className="px-6 py-3 rounded-full bg-foreground text-background text-[14px] font-semibold hover:bg-foreground/90 transition-all duration-300 shadow-sm flex items-center gap-2 disabled:opacity-50"
             >
-              <span className={`material-symbols-outlined text-[18px] ${isAnalyzing ? 'animate-spin' : ''}`}>
-                {isAnalyzing ? 'sync' : 'smart_toy'}
+              <span className={`material-symbols-outlined text-[18px]`}>
+                smart_toy
               </span>
-              {isAnalyzing ? 'AI Reviewing Documents...' : 'Process Documents with AI'}
+              Process Documents with AI
             </button>
+          </div>
+        )}
+
+        {/* Error Message */}
+        {errorMsg && (
+          <div className="bg-destructive/10 p-4 rounded-[20px] border border-destructive/20 flex gap-3 text-destructive">
+             <span className="material-symbols-outlined text-[24px]">error</span>
+             <div>
+               <h4 className="font-semibold text-[14px]">Error Processing Documents</h4>
+               <p className="text-[14px] mt-1">{errorMsg}</p>
+             </div>
           </div>
         )}
 
@@ -209,8 +239,8 @@ export function ApplyClient({ scheme, initialCheck }: ApplyClientProps) {
           ) : (
             <>
               {checkResult && (
-                <div className="bg-[#5f613a]/10 p-4 rounded-[20px] mb-2 border border-[#5f613a]/20 flex gap-3">
-                   <span className="material-symbols-outlined text-[#5f613a] text-[24px]">smart_toy</span>
+                <div className="bg-[var(--color-eg-success-light)]/50 p-4 rounded-[20px] mb-2 border border-border/50 flex gap-3">
+                   <span className="material-symbols-outlined text-[var(--color-eg-success-dark)] text-[24px]">smart_toy</span>
                    <div>
                      <h4 className="font-semibold text-foreground text-[14px]">AI Review Summary</h4>
                      <p className="text-[14px] text-muted-foreground mt-1">{aiSummary}</p>
@@ -218,16 +248,43 @@ export function ApplyClient({ scheme, initialCheck }: ApplyClientProps) {
                 </div>
               )}
 
-              {uploadedFiles.map((f, i) => (
-                <DocumentStatusCard 
-                  key={i}
-                  type={checkResult ? "verified" : "skeleton"} 
-                  title={f.name}
-                  subtitle={f.size ? `Size: ${(f.size / 1024 / 1024).toFixed(2)} MB` : 'Previously Uploaded'}
-                  message={checkResult ? "Document uploaded successfully and processed by AI." : "Pending AI Review."}
-                  confidence={checkResult ? readinessScore : 0}
-                />
-              ))}
+              {uploadedFiles.map((f, i) => {
+                const feedbackEntry = checkResult?.documentFeedback?.find(df => df.filename === f.name);
+                let type: 'verified' | 'missing' | 'skeleton' | 'invalid' | 'unrelated' = 'skeleton';
+                let message = "Pending AI Review.";
+                let confidence = 0;
+
+                if (checkResult) {
+                  if (feedbackEntry) {
+                    let status = feedbackEntry.status;
+                    const docConfidence = feedbackEntry.confidence ?? readinessScore;
+                    
+                    // Reject document if AI confidence is below 50%
+                    if (docConfidence < 50) {
+                      status = 'invalid';
+                    }
+
+                    type = status === 'valid' ? 'verified' : status;
+                    message = feedbackEntry.feedback;
+                    confidence = docConfidence;
+                  } else {
+                    type = 'verified';
+                    message = "Document uploaded successfully and processed by AI.";
+                    confidence = readinessScore;
+                  }
+                }
+
+                return (
+                  <DocumentStatusCard 
+                    key={i}
+                    type={type} 
+                    title={f.name}
+                    subtitle={f.size ? `Size: ${(f.size / 1024 / 1024).toFixed(2)} MB` : 'Previously Uploaded'}
+                    message={message}
+                    confidence={confidence}
+                  />
+                );
+              })}
 
               {missingDocs.map((doc: string, i: number) => (
                 <DocumentStatusCard 

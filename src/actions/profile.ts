@@ -10,7 +10,7 @@ import { revalidatePath } from "next/cache";
 
 const profileSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
-  age: z.coerce.number().min(18, "Must be at least 18"),
+  age: z.coerce.number().min(0, "Age cannot be negative"),
   state: z.string().min(1, "State is required"),
   preferredLanguage: z.string().optional(),
   gender: z.string().optional(),

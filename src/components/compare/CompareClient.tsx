@@ -1,6 +1,13 @@
 'use client'
 
 import React, { useState } from 'react'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 type Scheme = {
   id: string
@@ -36,36 +43,34 @@ export default function CompareClient({ schemes }: { schemes: Scheme[] }) {
       <div className="flex flex-col md:flex-row gap-6 w-full mb-8">
         <div className="flex-1 flex flex-col gap-3">
           <label className="font-semibold text-[16px] text-foreground/90">Select Scheme A</label>
-          <div className="relative">
-            <select
-              className="appearance-none w-full h-14 pl-4 pr-10 rounded-xl border border-border bg-card text-foreground/90 text-[16px] hover:border-primary focus:border-primary outline-none transition-all duration-300 cursor-pointer shadow-sm"
-              value={schemeAId}
-              onChange={(e) => setSchemeAId(e.target.value)}
-            >
-              <option value="">-- Choose a Scheme --</option>
+          <Select value={schemeAId} onValueChange={(val) => setSchemeAId(val || "")}>
+            <SelectTrigger className="w-full h-14 rounded-xl border-border bg-card text-foreground/90 text-[16px] hover:border-primary focus:ring-1 focus:ring-primary transition-all duration-300 shadow-sm">
+              <SelectValue placeholder="-- Choose a Scheme --">
+                {schemeA ? schemeA.title : null}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
               {schemes.map((s) => (
-                <option key={s.id} value={s.id}>{s.title}</option>
+                <SelectItem key={s.id} value={s.id}>{s.title}</SelectItem>
               ))}
-            </select>
-            <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground">expand_more</span>
-          </div>
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="flex-1 flex flex-col gap-3">
           <label className="font-semibold text-[16px] text-foreground/90">Select Scheme B</label>
-          <div className="relative">
-            <select
-              className="appearance-none w-full h-14 pl-4 pr-10 rounded-xl border border-border bg-card text-foreground/90 text-[16px] hover:border-primary focus:border-primary outline-none transition-all duration-300 cursor-pointer shadow-sm"
-              value={schemeBId}
-              onChange={(e) => setSchemeBId(e.target.value)}
-            >
-              <option value="">-- Choose a Scheme --</option>
+          <Select value={schemeBId} onValueChange={(val) => setSchemeBId(val || "")}>
+            <SelectTrigger className="w-full h-14 rounded-xl border-border bg-card text-foreground/90 text-[16px] hover:border-primary focus:ring-1 focus:ring-primary transition-all duration-300 shadow-sm">
+              <SelectValue placeholder="-- Choose a Scheme --">
+                {schemeB ? schemeB.title : null}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
               {schemes.map((s) => (
-                <option key={s.id} value={s.id}>{s.title}</option>
+                <SelectItem key={s.id} value={s.id}>{s.title}</SelectItem>
               ))}
-            </select>
-            <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground">expand_more</span>
-          </div>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 

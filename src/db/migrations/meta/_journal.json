@@ -43,6 +43,13 @@
       "when": 1781727242834,
       "tag": "0005_tan_greymalkin",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1781953058621,
+      "tag": "0006_panoramic_zemo",
+      "breakpoints": true
     }
   ]
 }

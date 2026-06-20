@@ -102,24 +102,60 @@ export async function getUserAttributes(userId: string): Promise<UserAttributes 
   }
 }
 
+export function getCasingVariations(str: string): string[] {
+  if (!str) return []
+  const lower = str.toLowerCase()
+  const upper = str.toUpperCase()
+  const title = str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+  const pascal = str.split(/[- ]/).map(s => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()).join('-')
+  const pascalSpace = str.split(/[- ]/).map(s => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()).join(' ')
+  return Array.from(new Set([lower, upper, title, pascal, pascalSpace]))
+}
+
+export function getArrayCasingVariations(arr: string[]): string[] {
+  const result = new Set<string>()
+  for (const str of arr) {
+    if (!str) continue
+    getCasingVariations(str).forEach(v => result.add(v))
+  }
+  return Array.from(result)
+}
+
 export function computeMatchScoreSql(userAttrs: UserAttributes) {
   const userGender = userAttrs.gender || ''
   const noGenderProvided = !userGender || userGender === 'prefer-not'
   const userEducation = userAttrs.education || ''
   const noEduProvided = !userEducation
-  const userOccTags = userAttrs.occupationTags.length > 0 
-    ? sql.join(userAttrs.occupationTags.map(t => sql`${t}`), sql`, `)
+
+  const userOccTagsVars = getArrayCasingVariations(userAttrs.occupationTags)
+  const userOccTagsSql = userOccTagsVars.length > 0 
+    ? sql.join(userOccTagsVars.map(t => sql`${t}`), sql`, `)
+    : sql``
+
+  const userStateVars = getCasingVariations(userAttrs.state)
+  const userStateSql = userStateVars.length > 0
+    ? sql.join(userStateVars.map(t => sql`${t}`), sql`, `)
+    : sql``
+
+  const userGenderVars = getCasingVariations(userGender)
+  const userGenderSql = userGenderVars.length > 0
+    ? sql.join(userGenderVars.map(t => sql`${t}`), sql`, `)
+    : sql``
+
+  const userEduVars = getCasingVariations(userEducation)
+  const userEduSql = userEduVars.length > 0
+    ? sql.join(userEduVars.map(t => sql`${t}`), sql`, `)
     : sql``
 
   return sql<number>`ROUND(
     CASE 
-      WHEN cardinality(${schemes.occupationTags}) = 0 OR 'all' = ANY(${schemes.occupationTags}) THEN 15
-      WHEN ${schemes.occupationTags} && ARRAY[${userOccTags}]::text[] THEN 25
+      WHEN cardinality(${schemes.occupationTags}) = 0 OR ${schemes.occupationTags} && ARRAY['all', 'All', 'ALL']::text[] THEN 15
+      WHEN ${userOccTagsVars.length > 0 ? sql`${schemes.occupationTags} && ARRAY[${userOccTagsSql}]::text[]` : sql`false`} THEN 25
       ELSE 0 
     END +
     CASE 
-      WHEN cardinality(${schemes.stateTags}) = 0 OR 'all' = ANY(${schemes.stateTags}) THEN 12
-      WHEN ${userAttrs.state} = ANY(${schemes.stateTags}) THEN 20
+      WHEN cardinality(${schemes.stateTags}) = 0 OR ${schemes.stateTags} && ARRAY['all', 'All', 'ALL']::text[] THEN 12
+      WHEN ${userStateVars.length > 0 ? sql`${schemes.stateTags} && ARRAY[${userStateSql}]::text[]` : sql`false`} THEN 20
       ELSE 0 
     END +
     CASE 
@@ -137,15 +173,15 @@ export function computeMatchScoreSql(userAttrs: UserAttributes) {
       ELSE 0 
     END +
     CASE 
-      WHEN cardinality(${schemes.genderTags}) = 0 OR 'all' = ANY(${schemes.genderTags}) THEN 8
+      WHEN cardinality(${schemes.genderTags}) = 0 OR ${schemes.genderTags} && ARRAY['all', 'All', 'ALL']::text[] THEN 8
       WHEN ${noGenderProvided} THEN 4
-      WHEN ${userGender} = ANY(${schemes.genderTags}) THEN 10
+      WHEN ${userGenderVars.length > 0 ? sql`${schemes.genderTags} && ARRAY[${userGenderSql}]::text[]` : sql`false`} THEN 10
       ELSE 0 
     END +
     CASE 
-      WHEN cardinality(${schemes.educationTags}) = 0 OR 'all' = ANY(${schemes.educationTags}) THEN 7
+      WHEN cardinality(${schemes.educationTags}) = 0 OR ${schemes.educationTags} && ARRAY['all', 'All', 'ALL']::text[] THEN 7
       WHEN ${noEduProvided} THEN 3
-      WHEN ${userEducation} = ANY(${schemes.educationTags}) THEN 10
+      WHEN ${userEduVars.length > 0 ? sql`${schemes.educationTags} && ARRAY[${userEduSql}]::text[]` : sql`false`} THEN 10
       ELSE 0 
     END
   )`
@@ -160,18 +196,50 @@ export async function getRecommendedSchemes(userId: string): Promise<ScoredSchem
 
   const scoreSql = computeMatchScoreSql(userAttrs)
 
+  const strictConditions = [
+    eq(schemes.isActive, true),
+    gte(scoreSql, 30)
+  ]
+
+  // Strict Gender Filter
+  if (userAttrs.gender && userAttrs.gender !== 'prefer-not') {
+    const genderVars = getCasingVariations(userAttrs.gender)
+    const genderSql = genderVars.length > 0 ? sql.join(genderVars.map(t => sql`${t}`), sql`, `) : sql``
+    strictConditions.push(
+      sql`cardinality(${schemes.genderTags}) = 0 OR ${schemes.genderTags} && ARRAY['all', 'All', 'ALL']::text[] OR ${genderVars.length > 0 ? sql`${schemes.genderTags} && ARRAY[${genderSql}]::text[]` : sql`false`}`
+    )
+  }
+
+  // Strict State Filter
+  if (userAttrs.state) {
+    const stateVars = getCasingVariations(userAttrs.state)
+    const stateSql = stateVars.length > 0 ? sql.join(stateVars.map(t => sql`${t}`), sql`, `) : sql``
+    strictConditions.push(
+      sql`cardinality(${schemes.stateTags}) = 0 OR ${schemes.stateTags} && ARRAY['all', 'All', 'ALL']::text[] OR ${stateVars.length > 0 ? sql`${schemes.stateTags} && ARRAY[${stateSql}]::text[]` : sql`false`}`
+    )
+  }
+
+  // Strict Age Filter
+  if (userAttrs.age) {
+    strictConditions.push(
+      sql`(${schemes.ageMin} IS NULL OR ${userAttrs.age} >= ${schemes.ageMin}) AND (${schemes.ageMax} IS NULL OR ${userAttrs.age} <= ${schemes.ageMax})`
+    )
+  }
+
+  // Strict Income Filter
+  if (userAttrs.income > 0) {
+    strictConditions.push(
+      sql`(${schemes.incomeMin} IS NULL OR ${userAttrs.income} >= ${schemes.incomeMin}::numeric) AND (${schemes.incomeMax} IS NULL OR ${userAttrs.income} <= ${schemes.incomeMax}::numeric)`
+    )
+  }
+
   const results = await db
     .select({
       ...RECOMMENDATION_COLUMNS,
       matchPercentage: scoreSql
     })
     .from(schemes)
-    .where(
-      and(
-        eq(schemes.isActive, true),
-        gte(scoreSql, 30)
-      )
-    )
+    .where(and(...strictConditions))
     .orderBy(desc(scoreSql))
 
   return results as ScoredScheme[]

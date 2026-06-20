@@ -1,33 +1,28 @@
-# Memory — Mobile UI & Navigation Refinements
+# Memory — Individual Document Feedback & Storage Fixes
 
-Last updated: 2026-06-18 13:02:43
+Last updated: 2026-06-20 16:53:00
 
 ## What was built
-
-- **Mobile Filter Scrolling:** Updated `src/app/schemes/page.tsx` to restrict `sticky` positioning of the `SchemeFilters` block to large screens only (`lg:sticky`). On mobile, the filter block now scrolls normally with the page content.
-- **Mobile Navbar Layout:** Modified `src/components/layout/AppNavbar.tsx` to hide the top-level Logout button on mobile devices, freeing up space between the Eligify logo and the menu toggle button.
-- **StaggeredMenu Refactor:** 
-  - Updated `src/components/navigation/StaggeredMenu.tsx` to accept a `children` prop for rendering custom elements (like the mobile Logout button) at the bottom of the menu.
-  - Added a dedicated, mobile-only "X" close button positioned at the top right of the menu panel for clearer navigation.
-  - Reduced the menu item text size significantly in mobile view (from `text-[2.5rem]` down to `text-sm`) for a more compact and readable layout.
+- **Individual Document Feedback:** Upgraded the "Apply Now" document AI checking feature. Modified `src/actions/documents.ts` so Gemini evaluates each uploaded file individually rather than just giving a blanket readiness score.
+- **AI UI Mapping:** Updated `ApplyClient.tsx` and `DocumentStatusCard.tsx` to map specific AI feedback, statuses (valid, invalid, unrelated), and confidence scores directly to individual document cards.
+- **Processing Overlay:** Added a full-screen blurred loading overlay with `LogoLoader` that activates while the AI is reviewing documents, solving UX issues where users thought the page froze.
+- **Copy Changes:** Updated the heading in `src/app/schemes/page.tsx` from "Matching Schemes" to "All Schemes".
 
 ## Decisions made
-
-- **Component Extensibility:** Used React `children` to inject the mobile Logout form into `StaggeredMenu` rather than hardcoding business logic (like auth actions) directly into the navigation component, adhering to the component architecture rules.
+- **Strict Confidence Threshold:** Added logic in `ApplyClient.tsx` ensuring that if the AI's `confidence` score for a specific document falls below 50%, the document is strictly rendered as `invalid` and loses its "Verified" badge.
+- **UI Error Handling:** Replaced native browser `alert()` popups with inline error UI components when document processing fails.
+- **Design Tokens:** Purged hardcoded hex colors (`#ffdad6`, `#5f613a`) from apply components and replaced them with the project's official CSS variables (e.g., `var(--color-eg-error-light)`).
 
 ## Problems solved
-
-- **Mobile UX Issues:** Fixed the issue where the sticky filter block overshadowed content on mobile screens. Addressed the cramped header space by relocating the mobile logout button. Fixed the excessively large text size in the mobile menu.
+- **Drizzle db:push bug:** Generated a migration for the new `document_feedback` JSONB column, but `db:push` crashed due to a known bug. Fixed by manually executing the SQL via a one-off node script.
+- **Supabase Bucket Missing:** Uploads were failing due to a missing `documents` bucket. Wrote and executed a script to create the bucket and apply the correct Row-Level Security (RLS) policies for user uploads.
 
 ## Current state
-
-- The mobile layout for both the global navigation and the schemes browsing page is significantly improved and functional. 
-- Desktop views remain unaffected and function as intended.
+- The AI document checker is fully functional, type-safe, and provides granular file-by-file feedback.
+- File uploads work correctly with the Supabase storage bucket.
 
 ## Next session starts with
-
-- Continuing with any outstanding UI/UX polishing, addressing newly reported user issues, or starting work on the next planned feature in the roadmap.
+- Proceeding with the next major feature on the roadmap or refining the user onboarding flow.
 
 ## Open questions
-
 - None.

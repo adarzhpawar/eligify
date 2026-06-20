@@ -53,7 +53,7 @@ export const FindSchemeResults = ({ results, savedSchemeIds, isSearching, hasSea
 
       {/* Results Content */}
       {!isSearching && hasSearched && results && (
-        <div className="max-w-4xl mx-auto flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="max-w-4xl mx-auto flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500 card-list-blur-others">
           <div className="flex items-center justify-between sticky top-0 py-4 bg-background/80 backdrop-blur-md z-20 border-b border-outline-variant/10">
             <h2 className="font-headline-md text-headline-md text-primary font-bold">Matched Schemes</h2>
             <span className="font-label-md text-label-md text-primary bg-secondary-container py-1.5 px-4 rounded-full font-bold">

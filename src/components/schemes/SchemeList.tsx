@@ -27,7 +27,7 @@ export function SchemeList({ schemes }: SchemeListProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 card-list-blur-others">
       {schemes.map((scheme) => (
         <SchemeCard
           key={scheme.id}

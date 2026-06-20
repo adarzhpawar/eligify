@@ -17,7 +17,7 @@ interface AIRecommendationCardProps {
 export const AIRecommendationCard = ({ schemeId, relevanceScore, explanation, schemeDetails, isTopMatch = false }: AIRecommendationCardProps) => {
   if (isTopMatch) {
     return (
-      <div className="bg-surface-container-lowest rounded-3xl shadow-[0px_20px_50px_rgba(34,34,34,0.06)] border border-outline-variant/10 p-8 hover:-translate-y-2 transition-all duration-500 group relative">
+      <div className="card-item bg-surface-container-lowest rounded-3xl shadow-[0px_20px_50px_rgba(34,34,34,0.06)] border border-outline-variant/10 p-8 hover:-translate-y-2 transition-all duration-500 group relative">
         <Link href={`/schemes/${schemeId}`} className="absolute inset-0 z-0"></Link>
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 relative z-10 pointer-events-none">
           <div>
@@ -62,7 +62,7 @@ export const AIRecommendationCard = ({ schemeId, relevanceScore, explanation, sc
 
   // Compact layout for non-top matches
   return (
-    <Link href={`/schemes/${schemeId}`} className="bg-surface-container-lowest rounded-3xl shadow-[0px_10px_30px_rgba(34,34,34,0.03)] border border-outline-variant/10 p-8 hover:-translate-y-1 transition-all duration-500 flex flex-col md:flex-row justify-between items-center gap-6 cursor-pointer group">
+    <Link href={`/schemes/${schemeId}`} className="card-item bg-surface-container-lowest rounded-3xl shadow-[0px_10px_30px_rgba(34,34,34,0.03)] border border-outline-variant/10 p-8 hover:-translate-y-1 transition-all duration-500 flex flex-col md:flex-row justify-between items-center gap-6 cursor-pointer group">
       <div className="flex-grow">
         <div className="flex items-center gap-3 mb-2">
           <h3 className="font-headline-md text-[24px] text-primary font-bold leading-[1.3]">{schemeDetails.title}</h3>

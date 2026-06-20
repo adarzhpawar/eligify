@@ -44,7 +44,7 @@ export const SchemeCard = ({ id, matchPercentage, ministry, title, description, 
   const deadline = getDeadlineStatus(closes);
 
   return (
-    <HoverCard className="bg-card border border-border rounded-[20px] p-6 flex flex-col gap-3 shadow-[0px_10px_30px_rgba(34,34,34,0.05)] transition-all duration-300 group relative">
+    <HoverCard className="card-item bg-card border border-border rounded-[20px] p-6 flex flex-col gap-3 shadow-[0px_10px_30px_rgba(34,34,34,0.05)] transition-all duration-300 group relative">
       <div className="flex justify-between items-start mb-2">
         {matchPercentage !== undefined && tier ? (
           <span

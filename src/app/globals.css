@@ -183,3 +183,14 @@
     @apply font-sans;
   }
 }
+
+@layer utilities {
+  .card-list-blur-others:has(.card-item:hover) .card-item:not(:hover) {
+    filter: blur(3px);
+    opacity: 0.6;
+  }
+  
+  .card-item {
+    transition: filter 0.3s ease, opacity 0.3s ease;
+  }
+}

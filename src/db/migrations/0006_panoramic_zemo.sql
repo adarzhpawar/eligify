@@ -1,0 +1,1 @@
+ALTER TABLE "document_checks" ADD COLUMN "document_feedback" jsonb DEFAULT '[]'::jsonb NOT NULL;
