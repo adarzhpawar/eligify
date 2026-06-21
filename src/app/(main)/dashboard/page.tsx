@@ -41,7 +41,7 @@ export default async function DashboardPage() {
     <div className="py-12">
       <BentoGrid>
         <DashboardHero name={firstName} schemeCount={Math.min(5, recommendedSchemes.length)} />
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 lg:col-span-2">
+        <div className="grid grid-cols-2 gap-4 md:gap-6 lg:col-span-2">
           <MetricCard 
             title="Eligible Schemes" 
             value={Math.min(5, recommendedSchemes.length)} 

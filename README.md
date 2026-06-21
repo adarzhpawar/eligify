@@ -1,21 +1,26 @@
 # Eligify AI
 
-Eligify AI is a premium AI-powered Government Scheme Discovery Platform designed to help citizens effortlessly navigate government opportunities, discover eligible schemes within minutes, and become application-ready.
+Eligify AI is a premium AI-powered Government Scheme Discovery Platform. It acts as an intelligent guidance layer on top of official government systems to help citizens efficiently discover relevant schemes, verify eligibility, and become application-ready within minutes.
 
-It acts as an intelligent guidance layer on top of official government systems.
+**Target Audience:** Students, Farmers, Doctors, Women, Senior Citizens, Entrepreneurs, and General Citizens.
 
-## Features
+## 🎯 Product Goals
+- **Primary:** Help users discover eligible government schemes instantly.
+- **Secondary:** Ensure users are fully application-ready with the correct documents before visiting official portals.
+- **Tertiary:** Reduce unnecessary AI costs by utilizing deterministic, SQL-based recommendation systems instead of LLM matching.
 
-- **Instant Recommendations:** Powered by a fast, deterministic SQL-based recommendation engine matching your profile (Occupation, State, Gender, Income, Age, Education).
-- **AI Scheme Finder:** A natural language discovery tool leveraging OpenAI to help you find schemes when you aren't sure what to search for.
-- **Document Readiness Checker:** Uses AI to verify if you have the correct documents prepared before applying, reducing application mistakes.
-- **Saved Schemes:** Keep track of your relevant schemes.
-- **Premium User Interface:** Built with Shadcn UI, GSAP micro-interactions, and tailored typography for a modern, assisted, and confident user experience.
+## ✨ Features
 
-## Tech Stack
+- **Instant Recommendations:** Powered by a fast, deterministic SQL-based recommendation engine matching your profile (Occupation, State, Gender, Income, Age, Education). **AI is strictly forbidden for generic filtering and recommendations.**
+- **Find Me Scheme:** A natural language discovery tool leveraging AI to help users find schemes through conversational prompts when they aren't sure what to search for.
+- **Document Checker:** Uses AI to read user-uploaded documents and verify readiness requirements before applying, reducing application mistakes.
+- **Native Mobile Experience:** Fully cross-platform architecture via Capacitor, featuring native haptics, splash screens, and native status bar integrations for Android.
+- **Premium User Interface:** Built with Shadcn UI, GSAP micro-interactions, ReactBits Navigation, and tailored typography to evoke an emotion of *"Assisted Confidence"*.
+
+## 🛠 Tech Stack
 
 **Frontend:**
-- [Next.js 16](https://nextjs.org/) (App Router)
+- Next.js 16 (App Router)
 - React 19
 - TypeScript
 - Tailwind CSS v4
@@ -23,21 +28,34 @@ It acts as an intelligent guidance layer on top of official government systems.
 - GSAP & Framer Motion
 - ReactBits Navigation
 
+**Mobile App (Native):**
+- Capacitor v8 (Android / iOS)
+- Native Haptics & System Interactions
+
 **Backend & Database:**
-- [Supabase](https://supabase.com/) (Authentication & Database)
-- PostgreSQL
-- [Drizzle ORM](https://orm.drizzle.team/)
+- Supabase (Authentication, PostgreSQL Database, Storage)
+- Drizzle ORM
 
 **AI Engine:**
-- OpenAI (Restricted strictly to the Natural Language Finder and Document Checker)
+- Google Gemini / OpenAI (Restricted strictly to the Natural Language Finder and Document Checker)
 
-## Getting Started
+## 🚀 Getting Started
 
 First, make sure you have the required environment variables set up in your `.env.local` file:
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `OPENAI_API_KEY`
-- `DATABASE_URL` (for Drizzle)
+```env
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+
+# App Database URL (Transaction Pooler - Port 6543)
+DATABASE_URL=...
+
+# Migrations Database URL (Session Pooler - Port 5432)
+DIRECT_URL=...
+
+# AI Configuration
+GEMINI_API_KEY=...
+AI_MODEL="gemini-2.5-flash"
+```
 
 Then, install dependencies and run the development server:
 
@@ -48,19 +66,39 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Database Migrations
+## 📱 Mobile App (Capacitor)
 
-This project uses Drizzle ORM to manage database schemas. To push changes to the database:
+Eligify AI is designed to run seamlessly on Android using Capacitor. It connects directly to the hosted web application (`https://eligify-gamma.vercel.app`) while leveraging native device features.
 
+To sync the project with the native Android code:
+```bash
+npx cap sync android
+```
+To open the Android project in Android Studio:
+```bash
+npx cap open android
+```
+
+## 🗄️ Database Management
+
+This project uses **Drizzle ORM** to manage database schemas. 
+
+To push your local schema changes to the remote Supabase database:
 ```bash
 npm run db:push
 ```
 
-## Architecture Notes
+To seed the database with initial schemes and data:
+```bash
+npm run db:seed
+```
 
-- **Fast First Architecture:** Recommendations and filtering run fully in SQL via Postgres, avoiding high memory footprints on the server. AI is used *only* where reasoning adds value, preserving deterministic speed for standard matching.
-- **Strict Separation of Concerns:** UI components are kept separate from business logic, which is housed in `/services` and `/actions`. 
+## 🏗 Architecture & Design Notes
 
-## License
+- **Fast First Architecture:** Recommendations and filtering run fully in SQL via Postgres, avoiding high memory footprints on the server.
+- **Strict Separation of Concerns:** UI components are kept strictly presentational. Business logic lives in `/services` and `/actions`, and direct database calls from UI components are forbidden.
+- **Design System:** Follows a *Premium Government SaaS* design language. Uses custom design tokens with a specific focus on high-contrast accessibility, tailored typography (*Plus Jakarta Sans*), and responsive Bento grids.
+
+## 📄 License
 
 MIT

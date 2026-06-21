@@ -9,6 +9,8 @@ import StaggeredMenu from "@/components/navigation/StaggeredMenu";
 import GradualBlur from "@/components/GradualBlur";
 import { signOutAction } from "@/actions/auth";
 
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
+
 export default function AppNavbar() {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
@@ -55,30 +57,31 @@ export default function AppNavbar() {
               alt="Eligify AI"
               width={300}
               height={90}
-              className="w-[140px] md:w-[180px] h-auto object-contain"
+              className="w-[140px] md:w-[180px] h-auto object-contain dark:invert"
               priority
             />
           </Link>
 
           <div className="flex items-center gap-4">
-            <div className="relative flex items-center">
+            <div className="relative flex items-center gap-1 md:gap-2">
+              <ThemeToggle />
               <StaggeredMenu
                 position="right"
                 items={navigationMenu}
                 displaySocials={false}
                 displayItemNumbering={false}
-                menuButtonColor="var(--color-eg-text-primary)"
-                openMenuButtonColor="var(--color-eg-text-primary)"
+                menuButtonColor="var(--accent-foreground)"
+                openMenuButtonColor="var(--accent-foreground)"
                 changeMenuColorOnOpen={false}
-                colors={["#FEFECC", "#FFFFFF"]}
-                accentColor="var(--color-eg-text-primary)"
+                colors={["var(--accent)", "var(--background)"]}
+                accentColor="var(--accent-foreground)"
                 isFixed={false}
               >
                 <form action={signOutAction} className="block md:hidden mt-auto">
                   <button
                     id="logout-button-mobile"
                     type="submit"
-                    className="px-8 py-4 rounded-full text-lg font-medium text-white bg-black hover:bg-neutral-800 transition-colors duration-300 w-full"
+                    className="px-8 py-4 rounded-full text-lg font-medium text-primary-foreground bg-primary hover:bg-primary/90 transition-colors duration-300 w-full"
                   >
                     Logout
                   </button>
@@ -89,7 +92,7 @@ export default function AppNavbar() {
               <button
                 id="logout-button"
                 type="submit"
-                className="px-5 py-2.5 rounded-full text-sm font-medium text-white bg-black hover:bg-neutral-800 transition-colors duration-300"
+                className="px-5 py-2.5 rounded-full text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 transition-colors duration-300"
               >
                 Logout
               </button>

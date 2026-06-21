@@ -447,8 +447,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
 
           <button
             ref={toggleBtnRef}
-            className={`sm-toggle relative inline-flex items-center gap-[0.3rem] border-0 cursor-pointer text-sm font-medium leading-none overflow-visible pointer-events-auto px-5 py-2.5 rounded-full bg-[var(--color-eg-surface)] hover:bg-[var(--color-eg-accent)] transition-colors duration-300 ${open ? 'text-black' : 'text-[#e9e9ef]'
-              }`}
+            className={`sm-toggle relative inline-flex items-center gap-[0.3rem] border-0 cursor-pointer text-sm font-medium leading-none overflow-visible pointer-events-auto px-5 py-2.5 rounded-full bg-[var(--accent)] hover:bg-[var(--accent)]/90 transition-colors duration-300 text-[var(--accent-foreground)]`}
             aria-label={open ? 'Close menu' : 'Open menu'}
             aria-expanded={open}
             aria-controls="staggered-menu-panel"
@@ -496,7 +495,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
           <div className="sm-panel-inner flex-1 flex flex-col gap-5 relative">
             <button
               onClick={closeMenu}
-              className="block lg:hidden absolute -top-12 right-0 p-2 text-black/60 hover:text-black transition-colors z-10"
+              className="block lg:hidden absolute -top-12 right-0 p-2 text-foreground/60 hover:text-foreground transition-colors z-10"
               aria-label="Close menu"
             >
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -512,7 +511,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                 items.map((it, idx) => (
                   <li className={`sm-panel-itemWrap relative overflow-hidden leading-none ${idx === items.length - 1 ? 'mt-auto pb-4' : ''}`} key={it.label + idx}>
                     <a
-                      className="sm-panel-item relative text-black font-semibold text-[2.25rem] md:text-[3.5rem] cursor-pointer leading-none tracking-[-1.5px] uppercase transition-[background,color] duration-150 ease-linear inline-block no-underline pr-[1.4em]"
+                      className="sm-panel-item relative text-foreground font-semibold text-[2.25rem] md:text-[3.5rem] cursor-pointer leading-none tracking-[-1.5px] uppercase transition-[background,color] duration-150 ease-linear inline-block no-underline pr-[1.4em]"
                       href={it.link}
                       aria-label={it.ariaLabel}
                       data-index={idx + 1}
@@ -525,7 +524,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                 ))
               ) : (
                 <li className="sm-panel-itemWrap relative overflow-hidden leading-none" aria-hidden="true">
-                  <span className="sm-panel-item relative text-black font-semibold text-[2.25rem] md:text-[3.5rem] cursor-pointer leading-none tracking-[-1.5px] uppercase transition-[background,color] duration-150 ease-linear inline-block no-underline pr-[1.4em]">
+                  <span className="sm-panel-item relative text-foreground font-semibold text-[2.25rem] md:text-[3.5rem] cursor-pointer leading-none tracking-[-1.5px] uppercase transition-[background,color] duration-150 ease-linear inline-block no-underline pr-[1.4em]">
                     <span className="sm-panel-itemLabel inline-block [transform-origin:50%_100%] will-change-transform">
                       No items
                     </span>
@@ -549,7 +548,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                         href={s.link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="sm-socials-link text-[1.2rem] font-medium text-[#111] no-underline relative inline-block py-[2px] transition-[color,opacity] duration-300 ease-linear"
+                        className="sm-socials-link text-[1.2rem] font-medium text-foreground no-underline relative inline-block py-[2px] transition-[color,opacity] duration-300 ease-linear"
                       >
                         {s.label}
                       </a>
@@ -591,11 +590,11 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
 .sm-scope .sm-socials-list .sm-socials-link:hover,
 .sm-scope .sm-socials-list .sm-socials-link:focus-visible { opacity: 1; }
 .sm-scope .sm-socials-link:focus-visible { outline: 2px solid var(--sm-accent, #ff0000); outline-offset: 3px; }
-.sm-scope .sm-socials-link { font-size: 1.2rem; font-weight: 500; color: #111; text-decoration: none; position: relative; padding: 2px 0; display: inline-block; transition: color 0.3s ease, opacity 0.3s ease; }
+.sm-scope .sm-socials-link { font-size: 1.2rem; font-weight: 500; color: var(--foreground); text-decoration: none; position: relative; padding: 2px 0; display: inline-block; transition: color 0.3s ease, opacity 0.3s ease; }
 .sm-scope .sm-socials-link:hover { color: var(--sm-accent, #ff0000); }
-.sm-scope .sm-panel-title { margin: 0; font-size: 1rem; font-weight: 600; color: #fff; text-transform: uppercase; }
+.sm-scope .sm-panel-title { margin: 0; font-size: 1rem; font-weight: 600; color: var(--foreground); text-transform: uppercase; }
 .sm-scope .sm-panel-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 1.5rem; flex: 1; }
-.sm-scope .sm-panel-item { position: relative; color: #000; font-weight: 600; cursor: pointer; line-height: 1; letter-spacing: -1.5px; text-transform: uppercase; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease; display: inline-block; text-decoration: none; padding-right: 1.4em; }
+.sm-scope .sm-panel-item { position: relative; color: var(--foreground); font-weight: 600; cursor: pointer; line-height: 1; letter-spacing: -1.5px; text-transform: uppercase; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease; display: inline-block; text-decoration: none; padding-right: 1.4em; }
 .sm-scope .sm-panel-itemLabel { display: inline-block; will-change: transform; transform-origin: 50% 100%; }
 .sm-scope .sm-panel-list:hover .sm-panel-item { opacity: 0.3; }
 .sm-scope .sm-panel-list .sm-panel-item:hover { opacity: 1; transform: translateX(20px); }

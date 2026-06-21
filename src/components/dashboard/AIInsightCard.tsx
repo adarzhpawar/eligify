@@ -10,7 +10,7 @@ type AIInsightCardProps = {
 export const AIInsightCard = ({ insightText, onReviewAction }: AIInsightCardProps) => {
   return (
     <FadeIn delay={0.2} className="lg:col-span-2">
-      <HoverCard className="bg-white/90 backdrop-blur-[10px] border border-white/20 shadow-[0px_10px_30px_rgba(34,34,34,0.05)] rounded-[20px] transition-all duration-300 p-6 bg-gradient-to-br from-[#fbf9f8] to-[#FEFECC]/20 border-l-4 border-l-[#222222] h-full">
+      <HoverCard className="bg-card/90 backdrop-blur-[10px] border border-border shadow-eg-sm rounded-[20px] transition-all duration-300 p-6 bg-gradient-to-br from-card to-[var(--color-eg-ai-background)] border-l-4 border-l-primary h-full">
         <div className="flex items-center gap-2 mb-3">
           <span 
             className="material-symbols-outlined text-primary" 

@@ -1,37 +1,38 @@
+import { useCallback } from 'react';
 import { Capacitor } from '@capacitor/core';
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
 
 export function useNativeHaptics() {
   const isNative = Capacitor.isNativePlatform();
 
-  const triggerImpact = async (style: ImpactStyle = ImpactStyle.Light) => {
+  const triggerImpact = useCallback(async (style: ImpactStyle = ImpactStyle.Light) => {
     if (!isNative) return;
     try {
       await Haptics.impact({ style });
     } catch (e) {
       console.error('Haptics failed:', e);
     }
-  };
+  }, [isNative]);
 
-  const triggerSuccess = async () => {
+  const triggerSuccess = useCallback(async () => {
     if (!isNative) return;
     try {
-      await Haptics.notification({ type: 'SUCCESS' as any });
+      await Haptics.notification({ type: NotificationType.Success });
     } catch (e) {
       console.error('Haptics failed:', e);
     }
-  };
+  }, [isNative]);
 
-  const triggerError = async () => {
+  const triggerError = useCallback(async () => {
     if (!isNative) return;
     try {
-      await Haptics.notification({ type: 'ERROR' as any });
+      await Haptics.notification({ type: NotificationType.Error });
     } catch (e) {
       console.error('Haptics failed:', e);
     }
-  };
+  }, [isNative]);
 
-  const triggerSelection = async () => {
+  const triggerSelection = useCallback(async () => {
     if (!isNative) return;
     try {
       await Haptics.selectionStart();
@@ -40,7 +41,7 @@ export function useNativeHaptics() {
     } catch (e) {
       console.error('Haptics failed:', e);
     }
-  };
+  }, [isNative]);
 
   return {
     isNative,

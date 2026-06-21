@@ -1,28 +1,29 @@
-# Memory — Individual Document Feedback & Storage Fixes
+# Memory — Dark Mode Implementation & UI Polish
 
-Last updated: 2026-06-20 16:53:00
+Last updated: 2026-06-21 16:22:00
 
 ## What was built
-- **Individual Document Feedback:** Upgraded the "Apply Now" document AI checking feature. Modified `src/actions/documents.ts` so Gemini evaluates each uploaded file individually rather than just giving a blanket readiness score.
-- **AI UI Mapping:** Updated `ApplyClient.tsx` and `DocumentStatusCard.tsx` to map specific AI feedback, statuses (valid, invalid, unrelated), and confidence scores directly to individual document cards.
-- **Processing Overlay:** Added a full-screen blurred loading overlay with `LogoLoader` that activates while the AI is reviewing documents, solving UX issues where users thought the page froze.
-- **Copy Changes:** Updated the heading in `src/app/schemes/page.tsx` from "Matching Schemes" to "All Schemes".
+- **Complete Dark Mode Support:** Overhauled hardcoded styles across `DashboardHero.tsx`, `MetricCard.tsx`, `AIInsightCard.tsx`, `SavedSchemesWidget.tsx`, and `TimelineWidget.tsx` to use semantic theme tokens (like `bg-card/90`, `shadow-eg-sm`, `border-border`).
+- **Dynamic Navigation Styling:** Refactored `StaggeredMenu.tsx` and `AppNavbar.tsx` to gracefully handle CSS variable injection for its background and text colors, resolving text contrast and visibility issues in both light and dark modes.
+- **Premium Theme Toggle Animation:** Upgraded `ThemeToggle.tsx` to use the native browser **View Transitions API**, producing a circular "expand/shrink" reveal animation. 
+- **Design Tokens Update:** Polished the dark mode accent colors in `globals.css` to use a sophisticated Champagne Gold (`#D4C89C`) while preserving the Pale Yellow (`#FEFECC`) light mode accent.
+- Fixed `LogoLoader.tsx` to correctly invert its logo image during dark mode.
 
 ## Decisions made
-- **Strict Confidence Threshold:** Added logic in `ApplyClient.tsx` ensuring that if the AI's `confidence` score for a specific document falls below 50%, the document is strictly rendered as `invalid` and loses its "Verified" badge.
-- **UI Error Handling:** Replaced native browser `alert()` popups with inline error UI components when document processing fails.
-- **Design Tokens:** Purged hardcoded hex colors (`#ffdad6`, `#5f613a`) from apply components and replaced them with the project's official CSS variables (e.g., `var(--color-eg-error-light)`).
+- **Theme Toggle Architecture:** Opted for a directional view transition logic. When switching Dark -> Light, the light theme expands outwards. When switching Light -> Dark, the light theme shrinks inwards (treating dark mode as the "absence of light"). This delivers an incredibly premium, native-feeling toggle.
+- **Strict Semantic Styling:** Enforced the absolute removal of raw hex colors (`#000`, `#FFF`) and specific tailwind colors (`text-black`) inside components, heavily leaning into CSS variables like `var(--accent)` and `text-foreground`.
 
 ## Problems solved
-- **Drizzle db:push bug:** Generated a migration for the new `document_feedback` JSONB column, but `db:push` crashed due to a known bug. Fixed by manually executing the SQL via a one-off node script.
-- **Supabase Bucket Missing:** Uploads were failing due to a missing `documents` bucket. Wrote and executed a script to create the bucket and apply the correct Row-Level Security (RLS) policies for user uploads.
+- **Invisible Menu Text:** Fixed a bug where the `StaggeredMenu` button rendered white text on a white background in light mode during SSR by aligning the component's internal `className` logic with `AppNavbar`'s passed variables.
+- **Transition Flicker Bug:** Fixed a highly visible split-second visual flicker at the end of the view transition animation by adding `fill: "forwards"` and optimizing the cubic-bezier easings.
 
 ## Current state
-- The AI document checker is fully functional, type-safe, and provides granular file-by-file feedback.
-- File uploads work correctly with the Supabase storage bucket.
+- The UI theming engine is fully robust and handles dark mode transitions elegantly.
+- The dashboard interface looks seamless, modern, and highly polished in both themes.
+- Everything is building and rendering correctly locally.
 
 ## Next session starts with
-- Proceeding with the next major feature on the roadmap or refining the user onboarding flow.
+- The design system and UI foundation are currently rock solid. The next session can confidently focus on feature development, building out new routes, or integrating data-fetching logic.
 
 ## Open questions
 - None.

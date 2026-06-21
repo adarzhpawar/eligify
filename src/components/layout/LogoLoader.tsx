@@ -9,7 +9,7 @@ export default function LogoLoader() {
         alt="Eligify AI Loading..."
         width={200}
         height={60}
-        className="w-[180px] h-auto object-contain animate-pulse duration-[2000ms]"
+        className="w-[180px] h-auto object-contain animate-pulse duration-[2000ms] dark:invert"
         priority
       />
     </div>

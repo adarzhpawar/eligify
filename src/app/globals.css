@@ -5,6 +5,29 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ──────────────────────────────────────────────
+   View Transition API Theme Toggle
+   ────────────────────────────────────────────── */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+/* When transitioning to Light (new is Light) -> Light on top */
+::view-transition-old(root) {
+  z-index: 1;
+}
+::view-transition-new(root) {
+  z-index: 2;
+}
+/* When transitioning to Dark (new is Dark, so HTML has .dark class) -> Light (old) on top */
+.dark::view-transition-old(root) {
+  z-index: 2;
+}
+.dark::view-transition-new(root) {
+  z-index: 1;
+}
+
+/* ──────────────────────────────────────────────
    Eligify AI Design Tokens
    Source of truth: context/ui_tokens.md
    ────────────────────────────────────────────── */
@@ -159,6 +182,117 @@
   --sidebar-ring: #222222;
 
   --font-plus-jakarta: "Plus Jakarta Sans", sans-serif;
+}
+
+/* ──────────────────────────────────────────────
+   Dark Mode Palette
+   Warm charcoal counterpart to the creamy light theme.
+   Activate by adding class="dark" to <html>.
+   ────────────────────────────────────────────── */
+.dark {
+  /* ── Core Surfaces ── */
+  --background: #0F0F0E;
+  --foreground: #E8E6E1;
+  --card: #1A1918;
+  --card-foreground: #E8E6E1;
+  --popover: #1A1918;
+  --popover-foreground: #E8E6E1;
+
+  /* ── Primary ── */
+  --primary: #E8E6E1;
+  --primary-foreground: #0F0F0E;
+
+  /* ── Secondary ── */
+  --secondary: #1E1D1C;
+  --secondary-foreground: #E8E6E1;
+
+  /* ── Muted ── */
+  --muted: #252423;
+  --muted-foreground: #9C9A95;
+
+  /* ── Accent ── */
+  --accent: #D4C89C;
+  --accent-foreground: #0F0F0E;
+
+  /* ── Destructive ── */
+  --destructive: #CF6679;
+
+  /* ── Borders & Inputs ── */
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.08);
+  --ring: #D4D48A;
+
+  /* ── Charts ── */
+  --chart-1: #E8E6E1;
+  --chart-2: #9C9A95;
+  --chart-3: #706E6A;
+  --chart-4: #504E4B;
+  --chart-5: #353432;
+
+  /* ── Sidebar ── */
+  --sidebar: #161615;
+  --sidebar-foreground: #E8E6E1;
+  --sidebar-primary: #E8E6E1;
+  --sidebar-primary-foreground: #0F0F0E;
+  --sidebar-accent: #3A3A1E;
+  --sidebar-accent-foreground: #FEFECC;
+  --sidebar-border: rgba(255, 255, 255, 0.06);
+  --sidebar-ring: #D4D48A;
+}
+
+/* ── Eligify Dark: Surface Scale ── */
+.dark {
+  --color-eg-background: #0F0F0E;
+  --color-eg-surface: #1A1918;
+  --color-eg-surface-dim: #121211;
+  --color-eg-surface-low: #161615;
+  --color-eg-surface-container: #1E1D1C;
+  --color-eg-surface-high: #252423;
+  --color-eg-surface-highest: #2A2928;
+
+  /* ── Eligify Dark: Text ── */
+  --color-eg-text-primary: #E8E6E1;
+  --color-eg-text-secondary: #9C9A95;
+  --color-eg-text-muted: #706E6A;
+  --color-eg-text-disabled: #504E4B;
+  --color-eg-text-inverse: #0F0F0E;
+
+  /* ── Eligify Dark: Accent ── */
+  --color-eg-accent: #D4C89C;
+
+  /* ── Eligify Dark: Border ── */
+  --color-eg-border: rgba(255, 255, 255, 0.08);
+  --color-eg-border-strong: rgba(255, 255, 255, 0.14);
+  --color-eg-border-focus: #D4D48A;
+
+  /* ── Eligify Dark: Status ── */
+  --color-eg-success: #66BB6A;
+  --color-eg-success-light: #1B2E1C;
+  --color-eg-success-dark: #81C784;
+  --color-eg-warning: #FFCA28;
+  --color-eg-warning-light: #2E2810;
+  --color-eg-error: #CF6679;
+  --color-eg-error-light: #2E1518;
+  --color-eg-info: #64B5F6;
+  --color-eg-info-light: #0D1F2E;
+
+  /* ── Eligify Dark: AI ── */
+  --color-eg-ai-background: #2A2A14;
+  --color-eg-ai-border: #4A4A2A;
+  --color-eg-ai-text: #FEFECC;
+
+  /* ── Eligify Dark: Match Score ── */
+  --color-eg-match-high: #66BB6A;
+  --color-eg-match-high-light: #1B2E1C;
+  --color-eg-match-medium: #FFCA28;
+  --color-eg-match-medium-light: #2E2810;
+  --color-eg-match-low: #CF6679;
+  --color-eg-match-low-light: #2E1518;
+
+  /* ── Eligify Dark: Shadows ── */
+  --shadow-eg-sm: 0px 10px 30px rgba(0, 0, 0, 0.25);
+  --shadow-eg-md: 0px 20px 50px rgba(0, 0, 0, 0.35);
+  --shadow-eg-hover: 0px 25px 60px rgba(0, 0, 0, 0.40);
 }
 
 @layer base {

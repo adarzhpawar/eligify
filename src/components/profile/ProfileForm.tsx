@@ -24,6 +24,7 @@ export default function ProfileForm({ initialData }: { initialData: Record<strin
     if (state.success) {
       triggerSuccess();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.success]);
 
   const STATE_OPTIONS: Record<string, string> = {

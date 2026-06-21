@@ -23,7 +23,7 @@ const TimelineItem = ({ timeLabel, timeLabelColor = 'text-muted-foreground', tit
 
 export const TimelineWidget = () => {
   return (
-    <div className="bg-white/90 backdrop-blur-[10px] border border-white/20 shadow-[0px_10px_30px_rgba(34,34,34,0.05)] rounded-[20px] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0px_15px_40px_rgba(34,34,34,0.08)] p-6 flex flex-col flex-1 h-full">
+    <div className="bg-card/90 backdrop-blur-[10px] border border-border shadow-eg-sm rounded-[20px] transition-all duration-300 hover:-translate-y-1 hover:shadow-eg-hover p-6 flex flex-col flex-1 h-full">
       <h3 className="text-[24px] font-semibold text-primary mb-6">Upcoming Deadlines</h3>
       <div className="relative border-l border-border ml-3 space-y-6 flex-grow">
         
